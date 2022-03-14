@@ -41,6 +41,7 @@ class Setup
 		$schema = <<<SQL
 			CREATE TABLE IF NOT EXISTS {$db->prefix}khatams (
 				id INT AUTO_INCREMENT,
+				name VARCHAR(255),
 				start_date DATE,
 				end_date DATE,
 				meeting_link VARCHAR(255),
