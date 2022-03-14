@@ -1,0 +1,15 @@
+{
+    "name": "moazzamkhan/khatam",
+    "authors": [
+        {
+            "name": "moazzam khan",
+            "email": "moazzam.khan@dialexa.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Khatam\\": "./"
+        }
+    },
+    "require": {}
+}
