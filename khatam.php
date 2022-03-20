@@ -80,6 +80,6 @@ if (is_admin() || (defined('WP_CLI') && WP_CLI)) {
             }
         );
     });
-	 
+
 }
 
