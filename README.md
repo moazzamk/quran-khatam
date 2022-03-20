@@ -14,6 +14,6 @@ make dua collectively.
     - Login to admin and activate the plugin  
     
 ## Admin
-![alt text](https://github.com/moazzamk/quran-khatam/tree/master/docs/images/add-khatam.png?raw=true)
+![alt text](https://github.com/moazzamk/quran-khatam/blob/master/docs/images/add-khatam.png?raw=true)
 
 
