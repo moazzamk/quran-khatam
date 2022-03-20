@@ -11,6 +11,26 @@ wp_enqueue_script('material', 'https://unpkg.com/material-components-web@latest/
 
 
 wp_enqueue_script('chartjs', 'https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js');
+
+
+// Registered users
+$totalRegistered = 0;
+$finishedReciting = 0;
+if ($khatamStats !== null) {
+    foreach ($khatamStats as $stat) {
+        $totalRegistered += $stat->count;
+        if ($stat->status == 1) {
+            $finishedReciting = $stat->count;
+        }
+    }
+    $registeredPercentage = ($totalRegistered * 100) / 30;
+    $finishedRecitingPercentage = ($finishedReciting * 100) / $totalRegistered;
+}
+else {
+    $registeredPercentage = 0;
+    $finishedRecitingPercentage = 0;
+}
+
 ?>
 
 <link type="text/css" rel="stylesheet" href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css"/>
@@ -23,11 +43,12 @@ wp_enqueue_script('chartjs', 'https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/c
         width: 97%;
         margin-right: 16px;
         height: 500px;
-
+        margin-top: 40px;
+    }
+    .current-khatam-card-container table th {
+        text-align: left;
     }
     .current-khatam-card {
-
-
         display: flex;
         flex-direction: row;
         justify-content: flex-start;
@@ -68,67 +89,96 @@ wp_enqueue_script('chartjs', 'https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/c
     <?= json_encode($currentKhatam); ?>
 </textarea>
 
+
+
+<input type="hidden" id="registered-recitors" value="<?= $totalRegistered?>" />
+<input type="hidden" id="finished-recitors" value="<?= $finishedReciting?>" />
 <div class="mdc-card current-khatam-card-container">
     <div style="background-color: #444;padding-left: 16px">
         <h2 style="color: #ddd">Current Khatam</h2>
     </div>
-    <div class="current-khatam-card">
+    <?php if (!empty($currentKhatam)) { ?>
+        <div class="current-khatam-card">
         <div class="current-khatam-form-container">
             <div class="mdc-card__content">
                 <form>
-                    Start Date:
-                    <input type="text"
-                           name="start_date"
-                           id="start-date"
-                           class="datepicker" /><br/>
-                    End Date:
-                    <input type="text"
-                           name="end_date"
-                           id="end-date"
-                           class="datepicker"/><br/>
-
-                    Meeting Time:
-                    <input
-                        type="text"
-                        name="meeting_date"
-                        id="meeting-date"
-                        class="datepicker"
-                        placeholder="02/01/2000"/>
-
-                    <input
-                        type="text"
-                        placeholder="00:00 am"
-                        style="width: 80px"/><br/>
-
-                    Meeting link: <input
-                        type="text"
-                        name="meeting_link"
-                        id="meeting-link"
-                        style="width: 200px"
-                        placeholder="https://zoom.com/some-meeting"/s>
-
-                    <div>
-                        <input type="submit" value="Save" class="button action">
-                    </div>
+                    <table>
+                        <tr>
+                            <td>Start Date</td>
+                            <td><?= $currentKhatam->startDate; ?></td>
+                        </tr>
+                        <tr>
+                            <td>End Date</td>
+                            <td><?= $currentKhatam->endDate; ?></td>
+                        </tr>
+                        <tr>
+                            <td>Meeting Time</td>
+                            <td><?= $currentKhatam->meetingTs ?></td>
+                        </tr>
+                        <tr>
+                            <td>Meeting Link</td>
+                            <td><?= $currentKhatam->meetingLink ?></td>
+                        </tr>
+                    </table>
                 </form>
             </div>
         </div>
         <div class="current-khatam-chart-container" style="position: relative">
             <div class="chart-text">
-                <h1>80%</h1>
+                <h1><?= $registeredPercentage ?>%</h1>
             </div>
             <canvas id="registered-users" width="300" height="300"></canvas>
         </div>
         <div class="current-khatam-chart-container" style="position: relative">
             <div class="chart-text">
-                <h1>20%</h1>
+                <h1><?= $finishedRecitingPercentage ?>%</h1>
             </div>
             <canvas id="reciting-users" width="300" height="300"></canvas>
 
         </div>
         <div style="clear: both"></div>
     </div>
+    <?php } else { ?>
+        <div style="padding-left: 16px;">
+            <h3>There is no active Khatam</h3>
+        </div>
+    <?php } ?>
 </div>
+<div class="mdc-card current-khatam-card-container" >
+        <div style="background-color: #444;padding-left: 16px">
+            <h2 style="color: #ddd">Upcoming Khatam(s)</h2>
+        </div>
+        <table style="margin-left: 16px;">
+            <tr>
+                <th>ID</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Meeting Time</th>
+                <th>Meeting Link</th>
+                <th>Actions</th>
+            </tr>
+            <?php if (count($futureKhatams) === 0) { ?>
+                <tr>
+                    <td colspan="5" style="text-align: center"><h3>There are no upcoming Khatams</h3></td>
+                </tr>
+            <?php } ?>
+            <?php foreach ($futureKhatams as $khatam) {?>
+                <tr>
+                    <td><?=$khatam->id?></td>
+                    <td><?=$khatam->startDate?></td>
+                    <td><?=$khatam->endDate?></td>
+                    <td><?=$khatam->meetingTs?></td>
+                    <td><?=$khatam->meetingLink?></td>
+                    <td>
+                        <a href="admin.php?page=khatams-add&id=<?=$khatam->id?>">Edit</a>
+                        <a href="admin-post.php?action=khatam-delete-khatam&id=<?=$khatam->id?>">Delete</a>
+                    </td>
+                </tr>
+            <?php } ?>
+        </table>
+</div>
+
+
 <script type="text/javascript" src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
 

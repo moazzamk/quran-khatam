@@ -67,6 +67,7 @@ SQL;
             CREATE TABLE IF NOT EXISTS {$db->prefix}khatams_users (
 				khatam_id INT,
 				user_email VARCHAR(255),
+				status TINYINT NOT NULL DEFAULT 0,
 				juz_num TINYINT
 			) $collate;
 SQL;

@@ -1,6 +1,11 @@
 jQuery(document).ready(function ($) {
    $('.datepicker').datepicker();
 
+   const registeredRecitors = parseInt($('#registered-recitors').val());
+   const finishedRecitors = parseInt($('#finished-recitors').val());
+
+   console.log(registeredRecitors, finishedRecitors, 'hiii');
+
    // Registered users chart
    const ctx = document.getElementById('registered-users').getContext('2d');
    const myChart = new Chart(ctx, {
@@ -9,7 +14,7 @@ jQuery(document).ready(function ($) {
          labels: ['Registered', 'Not'],
          datasets: [{
             label: '# of Votes',
-            data: [20, 10],
+            data: [registeredRecitors, 30 - registeredRecitors],
             backgroundColor: [
                'rgba(54, 162, 235, 0.5)',
                'rgba(255, 99, 132, 0.5)',
@@ -38,7 +43,8 @@ jQuery(document).ready(function ($) {
          labels: ['Done', 'Still reciting'],
          datasets: [{
             label: '# of Votes',
-            data: [12, 19],
+            // for some reason this chart doesn't work if all values are zero. thus, math.max
+            data: [finishedRecitors, Math.max(registeredRecitors - finishedRecitors, 1)],
             backgroundColor: [
                'rgba(0, 200, 50, 0.5)',
                'rgba(255, 255, 255, 0.5)',
@@ -53,18 +59,12 @@ jQuery(document).ready(function ($) {
          }]
       },
       options: {
-         elements: {
-            center: {
-               text: '82%',
-            }
-         },
-
          layout: {
             padding: 10
          }
       }
    });
-   console.log(Object.keys(Chart));
+
    Chart.Doughnut.default.labelFontFamily = 'Arial';
    Chart.Doughnut.default.labelFontStyle = 'normal';
    Chart.Doughnut.default.labelFontColor = '#000';
