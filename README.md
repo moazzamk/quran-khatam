@@ -12,3 +12,4 @@ make dua collectively.
 - ### From Zip file        
     - Unzip the plugin inside Wordpress plugins folder 
     - Login to admin and activate the plugin  
+    
