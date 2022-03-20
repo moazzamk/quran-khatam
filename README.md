@@ -13,3 +13,7 @@ make dua collectively.
     - Unzip the plugin inside Wordpress plugins folder 
     - Login to admin and activate the plugin  
     
+## Admin
+![alt text](https://github.com/moazzamk/quran-khatam/blob/master/add-khatam.png?raw=true)
+
+
