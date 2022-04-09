@@ -1,15 +1,5 @@
 <?php
 
-wp_enqueue_style('jquery-wp-cs', KHATAM_URL);
-wp_enqueue_script('jquery');
-wp_enqueue_script('jquery-ui-datepicker');
-wp_enqueue_script('custom-script', KHATAM_URL . '/public/admin.js');
-
-wp_enqueue_style('material-icons', 'https://fonts.googleapis.com/icon?family=Material+Icons');
-wp_enqueue_style('material', 'https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css');
-wp_enqueue_script('material', 'https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js');
-
-
 wp_enqueue_script('chartjs', 'https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js');
 
 

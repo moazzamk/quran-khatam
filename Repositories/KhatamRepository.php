@@ -68,6 +68,24 @@ class KhatamRepository {
         return $this->db->get_results($sql);
     }
 
+    public function getKhatamUserList($khatamId)
+    {
+        $sql = <<<SQL
+            SELECT
+                ksu.user_email AS email,
+                ksu.status AS status,
+                ksu.juz_num AS juz,
+                ku.name AS name
+            FROM {$this->db->prefix}khatams_users AS ksu
+            INNER jOIN {$this->db->prefix}khatam_users AS ku ON (ku.email=ksu.user_email)
+            WHERE ksu.khatam_id= %d
+        SQL;
+
+        $stmt = $this->db->prepare($sql, $khatamId);
+
+        return $this->db->get_results($stmt);
+    }
+
     /**
      * Get a khatam's stats
      *
@@ -86,11 +104,11 @@ class KhatamRepository {
             WHERE
                 khatam_id={$id}
         SQL;
-        return $this->db->get_row($sql);
+        return $this->db->get_results($sql);
     }
 
     /**
-     * @return array|object|void|null
+     * @return array|object|null
      */
     public function getCurrentKhatam()
     {

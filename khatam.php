@@ -10,6 +10,8 @@ Author: Moazzam Khan
 License: GPLv2 or later
 */
 
+use Khatam\Main;
+
 /** Autoloader */
 require __DIR__ . '/vendor/autoload.php';
 
@@ -25,61 +27,29 @@ if (!function_exists('add_action')) {
 	exit;
 }
 
+// Include common styles and scripts
+wp_enqueue_style('jquery-wp-cs', KHATAM_URL);
+wp_enqueue_style('material', 'https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css');
+wp_enqueue_style('material-icons', 'https://fonts.googleapis.com/icon?family=Material+Icons');
+
+wp_enqueue_script('jquery');
+wp_enqueue_script('jquery-ui-datepicker');
+wp_enqueue_script('custom-script', KHATAM_URL . '/public/admin.js');
+wp_enqueue_script('material', 'https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js');
+
+
 // Hook for when plugin is activated
 register_activation_hook(__FILE__, [ '\Khatam\Setup', 'activate' ]);
 register_deactivation_hook(__FILE__, ['\Khatam\Setup', 'deactivate' ]);
 
 $khatamRepo = new \Khatam\Repositories\KhatamRepository($wpdb);
 $adminController = new \Khatam\Controllers\AdminController($khatamRepo);
+$frontController = new \Khatam\Controllers\FrontController($khatamRepo);
 
-if (is_admin() || (defined('WP_CLI') && WP_CLI)) {
+// The 2 things we will need on the front end
+add_shortcode('khatam_registration_form', [$frontController, 'registration']);
+add_shortcode('khatam_registration_status', [$frontController, 'getKhatamStatus']);
 
-    // Admin hooks
-    add_action( 'admin_post_khatam-save-response', function () {
-        global $adminController;
-        $adminController->save($_REQUEST);
-    });
-    add_action( 'admin_post_khatam-delete-khatam', function () {
-        global $adminController;
-        $adminController->delete($_REQUEST);
-    });
 
-    // Admin menu
-    add_action('admin_menu', function () {
-        add_menu_page(
-            'Quran Khatam',
-            'Quran Khatam',
-            'manage_options',
-            'khatams-dashboard',
-            function () {
-                global $adminController;
-                $adminController->dashboard();
-            }
-        );
-        add_submenu_page(
-            'khatams-dashboard',
-            'Dashboard',
-            'Dashboard',
-            'manage_options',
-            'khatams-dashboard',
-            function () {
-                global $adminController;
-                $adminController->dashboard();
-            }
-        );
-
-        add_submenu_page(
-            'khatams-dashboard',
-            'Add/Edit Khatam',
-            'Add/Edit Khatam',
-            'manage_options',
-            'khatams-add',
-            function () {
-                global $adminController;
-                $adminController->add();
-            }
-        );
-    });
-
-}
+Main::main();
 
