@@ -6,10 +6,19 @@
             "email": "moazzamk@gmail.com"
         }
     ],
+    "config": {
+        "bin-dir": "bin"
+    },
     "autoload": {
         "psr-4": {
-            "Khatam\\": "./"
+            "Khatam\\": "./src"
         }
     },
-    "require": {}
+    "require": {
+        "phpmailer/phpmailer": "^6.6"
+    },
+    "require-dev": {
+        "phpspec/phpspec": "^7.2",
+        "phpspec/prophecy": "1.15"
+    }
 }
