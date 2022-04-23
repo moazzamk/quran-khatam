@@ -4,19 +4,30 @@ namespace Khatam;
 
 class Setup
 {
-	public static function activate() 
-	{
-		global $wpdb;
-		self::install($wpdb);
+	private MeetingReminderCommand $meetingReminder;
+	private \wpdb $db;
+
+	public function __constructor(
+		MeetingReminderCommand $meetingReminder,
+		\wpdb $db
+	) {
+		$ths->meetingReminder = $meetingReminder;
+		$this->db = $db;
 	}
 
-    public static function deactivate()
-    {
-	    global $wpdb;
-	    self::uninstall($wpdb);
-    }
+	public function activate() 
+	{
+		$this->install();
+		$this->setupCron();
+	}
 
-    protected static function uninstall($db)
+    public function deactivate()
+    {
+		$this->removeCron();
+		$this->uninstall();
+	}
+
+    protected function uninstall()
     {
         require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
         $tables = [
@@ -27,8 +38,8 @@ class Setup
 
         foreach ($tables as $table) {
             $sql = 'DROP TABLE ' . $table;
-            $db->query($sql);
-            error_log($sql);
+            // $this->db->query($sql);
+            // error_log($sql);
             dbDelta($sql);
         }
     }
@@ -76,5 +87,25 @@ SQL;
 		add_option('khatam_db_version', '1');
 
 	}
+
+	protected function setupCron()
+	{
+		add_action(
+			'kq_check_meeting_hook', 
+			$this->meetingReminder, 
+			10
+		);
+		wp_schedule_event( 
+			time(), 
+			'daily', 
+			'kq_check_meeting_hook', 
+		);
+	}
+
+	protected function removeCron()
+	{
+
+	}
+
 }
 
