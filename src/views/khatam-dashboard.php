@@ -16,7 +16,6 @@ if ($khatamStats !== null) {
         }
     }
 
-
     $registeredPercentage = round(($totalRegistered * 100) / 30, 2);
     if ($totalRegistered > 0) {
         $finishedRecitingPercentage = round(($finishedReciting * 100) / $totalRegistered, 2);
