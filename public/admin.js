@@ -1,5 +1,5 @@
-jQuery(document).ready(function ($) {
-   $('.datepicker').datepicker();
+jQuery().ready(function ($) {
+   //$('.datepicker').datepicker();
 
    const registeredRecitors = parseInt($('#registered-recitors').val());
    const finishedRecitors = parseInt($('#finished-recitors').val());

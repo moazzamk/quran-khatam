@@ -2,22 +2,26 @@
 
 namespace Khatam;
 
+use \Khatam\Commands\MeetingReminderCommand;
+
 class Setup
 {
 	private MeetingReminderCommand $meetingReminder;
 	private \wpdb $db;
 
-	public function __constructor(
+	public function __construct(
 		MeetingReminderCommand $meetingReminder,
 		\wpdb $db
 	) {
-		$ths->meetingReminder = $meetingReminder;
+		$this->meetingReminder = $meetingReminder;
 		$this->db = $db;
+
+		$this->activate();
 	}
 
 	public function activate() 
 	{
-		$this->install();
+		$this->install($this->db);
 		$this->setupCron();
 	}
 
@@ -95,16 +99,20 @@ SQL;
 			$this->meetingReminder, 
 			10
 		);
-		wp_schedule_event( 
-			time(), 
-			'daily', 
-			'kq_check_meeting_hook', 
-		);
+
+		if ( ! wp_next_scheduled( 'kq_check_meeting_hook' ) ) {
+			wp_schedule_event( 
+				time(), 
+				'daily', 
+				'kq_check_meeting_hook' 
+			);
+		}
 	}
 
 	protected function removeCron()
 	{
-
+		$timestamp = wp_next_scheduled( 'kq_check_meeting_hook' );
+		wp_unschedule_event( $timestamp, 'kq_check_meeting_hook' );
 	}
 
 }

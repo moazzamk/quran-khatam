@@ -10,6 +10,7 @@ Author: Moazzam Khan
 License: GPLv2 or later
 */
 
+use PHPMailer\PHPMailer\PHPMailer;
 use Khatam\Main;
 
 /** Autoloader */

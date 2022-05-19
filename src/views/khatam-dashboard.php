@@ -6,15 +6,21 @@ wp_enqueue_script('chartjs', 'https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/c
 // Registered users
 $totalRegistered = 0;
 $finishedReciting = 0;
+
 if ($khatamStats !== null) {
     foreach ($khatamStats as $stat) {
         $totalRegistered += $stat->count;
         if ($stat->status == 1) {
+            print 'hi' . $stat->count;
             $finishedReciting = $stat->count;
         }
     }
-    $registeredPercentage = ($totalRegistered * 100) / 30;
-    $finishedRecitingPercentage = ($finishedReciting * 100) / $totalRegistered;
+
+
+    $registeredPercentage = round(($totalRegistered * 100) / 30, 2);
+    if ($totalRegistered > 0) {
+        $finishedRecitingPercentage = round(($finishedReciting * 100) / $totalRegistered, 2);
+    }
 }
 else {
     $registeredPercentage = 0;
@@ -171,5 +177,5 @@ else {
 
 <script type="text/javascript" src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
-
+<script type="text/javascript" src="<?=KHATAM_URL . '/public/admin.js'?>"></script>
 

@@ -77,7 +77,7 @@ class KhatamRepository {
                 ksu.juz_num AS juz,
                 ku.name AS name
             FROM {$this->db->prefix}khatams_users AS ksu
-            INNER jOIN {$this->db->prefix}khatam_users AS ku ON (ku.email=ksu.user_email)
+            INNER JOIN {$this->db->prefix}khatam_users AS ku ON (ku.email=ksu.user_email)
             WHERE ksu.khatam_id= %d
         SQL;
 
@@ -98,12 +98,13 @@ class KhatamRepository {
         $sql = <<<SQL
             SELECT 
                 status,
-                count
+                COUNT(*) as count
             FROM {$this->db->prefix}khatams_users
-            GROUP BY status
             WHERE
                 khatam_id={$id}
+            GROUP BY status
         SQL;
+
         return $this->db->get_results($sql);
     }
 
