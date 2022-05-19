@@ -14,7 +14,7 @@ if ($khatamStats !== null) {
         }
     }
     $registeredPercentage = ($totalRegistered * 100) / 30;
-    $finishedRecitingPercentage = ($finishedReciting * 100) / $totalRegistered;
+    $finishedRecitingPercentage = ($totalRegistered == 0) ? 0 : ($finishedReciting * 100) / $totalRegistered;
 }
 else {
     $registeredPercentage = 0;
@@ -171,5 +171,5 @@ else {
 
 <script type="text/javascript" src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
-
+<script type="text/javascript" src="<?=KHATAM_URL . '/public/admin.js';?>"></script>
 

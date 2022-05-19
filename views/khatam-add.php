@@ -66,3 +66,4 @@ $khatam = $khatam ?? new StdClass;
         <input type="submit" value="Save" class="button button-primary">
     </div>
 </form>
+<script type="text/javascript" src="<?=KHATAM_URL . '/public/admin.js';?>"></script>

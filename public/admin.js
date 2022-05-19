@@ -1,5 +1,7 @@
-jQuery(document).ready(function ($) {
-   $('.datepicker').datepicker();
+jQuery().ready(function ($) {
+   setTimeout(function () {
+     // jQuery('.datepicker').datepicker();
+   }, 1000);
 
    const registeredRecitors = parseInt($('#registered-recitors').val());
    const finishedRecitors = parseInt($('#finished-recitors').val());
@@ -7,6 +9,7 @@ jQuery(document).ready(function ($) {
    console.log(registeredRecitors, finishedRecitors, 'hiii');
 
    // Registered users chart
+   console.log(document.getElementById('registered-users'));
    const ctx = document.getElementById('registered-users').getContext('2d');
    const myChart = new Chart(ctx, {
       type: 'doughnut',
@@ -64,11 +67,11 @@ jQuery(document).ready(function ($) {
          }
       }
    });
+   ctx1.fillText("22%", 300/2 - 20, 300/2, 200);
 
    Chart.Doughnut.default.labelFontFamily = 'Arial';
    Chart.Doughnut.default.labelFontStyle = 'normal';
    Chart.Doughnut.default.labelFontColor = '#000';
-   ctx1.fillText("22%", 300/2 - 20, 300/2, 200);
 
 
 }(jQuery));

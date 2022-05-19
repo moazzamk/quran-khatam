@@ -34,7 +34,6 @@ wp_enqueue_style('material-icons', 'https://fonts.googleapis.com/icon?family=Mat
 
 wp_enqueue_script('jquery');
 wp_enqueue_script('jquery-ui-datepicker');
-wp_enqueue_script('custom-script', KHATAM_URL . '/public/admin.js');
 wp_enqueue_script('material', 'https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js');
 
 

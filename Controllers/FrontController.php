@@ -18,8 +18,17 @@ class FrontController
      *
      * @return false|string
      */
-    public function registration()
+    public function registration(): bool|string
     {
+        wp_enqueue_script('custom-script', KHATAM_URL . '/public/registration.js');
+        wp_localize_script(
+            'custom-script',
+            'params',
+            [ 'url' => admin_url( 'admin-ajax.php' ) ]
+        );
+
+        error_log(json_encode([ 'ajaxurl' => admin_url( 'admin-ajax.php' ) ]));
+
         ob_start();
         require_once __DIR__ . '/../views/registration.php';
         return ob_get_clean();
@@ -30,7 +39,7 @@ class FrontController
      *
      * @return false|string
      */
-    public function getKhatamStatus()
+    public function getKhatamStatus(): bool|string
     {
         $khatamStats = [];
         $khatam = $this->khatamRepo->getCurrentKhatam();
@@ -41,5 +50,15 @@ class FrontController
         ob_start();
         require_once __DIR__ . '/../views/khatam-stats.php';
         return ob_get_clean();
+    }
+
+    public function saveRegistration(array $data): string
+    {
+
+        print ' i was called';
+
+        error_log('saving registration');
+
+        return 'hiooo';
     }
 }

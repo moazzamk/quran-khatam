@@ -17,7 +17,13 @@
         border: 3px #000 solid;
     }
 </style>
-<form class="khatam-registration-form">
+<form
+      id="khatam-registration-form"
+      action="<?= esc_url( admin_url( 'admin-post.php' ) ); ?>"
+      class="khatam-registration-form"
+      method="post"
+>
+    <input type="hidden" name="action" value="khatam-save-registration" />
     <div class="form-field-container">
         <div>
             <b>Please select an option</b>
@@ -27,7 +33,7 @@
             <li>
                 <div class="mdc-touch-target-wrapper">
                     <div class="mdc-radio mdc-radio--touch">
-                        <input class="mdc-radio__native-control" type="radio" id="radio-1" name="action" checked>
+                        <input class="mdc-radio__native-control" type="radio" id="radio-1" name="khatam-action" checked>
                         <div class="mdc-radio__background">
                             <div class="mdc-radio__outer-circle"></div>
                             <div class="mdc-radio__inner-circle"></div>
@@ -40,7 +46,7 @@
             <li>
                 <div class="mdc-touch-target-wrapper">
                     <div class="mdc-radio mdc-radio--touch">
-                        <input class="mdc-radio__native-control" type="radio" id="radio-2" name="action" checked>
+                        <input class="mdc-radio__native-control" type="radio" id="radio-2" name="khatam-action" checked>
                         <div class="mdc-radio__background">
                             <div class="mdc-radio__outer-circle"></div>
                             <div class="mdc-radio__inner-circle"></div>
@@ -86,10 +92,8 @@
 </form>
 
 <script type="text/javascript">
-    const radio = new MDCRadio(document.querySelector('.mdc-radio'));
-    const formField = new MDCFormField(document.querySelector('.mdc-form-field'));
-    formField.input = radio;
 
-    const textField = new MDCTextField(document.querySelector('.mdc-text-field'));
-    const buttonRipple = new MDCRipple(document.querySelector('.mdc-button'));
+
+
+
 </script>

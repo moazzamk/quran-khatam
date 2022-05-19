@@ -90,5 +90,7 @@
 </div>
 
 <script type="text/javascript">
-    const dataTable = new MDCDataTable(document.querySelector('.mdc-data-table'));
+    jQuery.ready(function () {
+        const dataTable = new MDCDataTable(document.querySelector('.mdc-data-table'));
+    });
 </script>
