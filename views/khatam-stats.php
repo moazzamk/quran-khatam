@@ -3,6 +3,17 @@
         border: 1px #000 solid;
         width: 100%;
     }
+    .mdc-data-table__table tbody tr:nth-child(odd) {
+        background-color: #eee;
+    }
+    .mdc-data-table__header-row th {
+        font-weight: bold;
+        background-color: #1aa1d8;
+    }
+    .mdc-data-table__table  thead tr {
+        border-bottom: 1px red solid ;
+#        box-shadow: 0 2px 8px  #aaa !important;
+    }
 </style>
 
 <div class="khatam-stats-container">
@@ -11,8 +22,9 @@
             <thead>
             <tr class="mdc-data-table__header-row">
                 <th
-                    class="mdc-data-table__header-cell"
+                    class="mdc-deader"
                     role="columnheader"
+
                     scope="col"
                     aria-sort="none"
                     data-column-id="juz"
@@ -21,19 +33,13 @@
                         <div class="mdc-data-table__header-cell-label">
                             Juz
                         </div>
-                        <!--
-                        <button class="mdc-icon-button material-icons mdc-data-table__sort-icon-button"
-                                aria-label="Sort by dessert" aria-describedby="dessert-status-label">arrow_upward</button>
-                         -->
-                        <div class="mdc-data-table__sort-status-label" aria-hidden="true" id="dessert-status-label">
-                        </div>
                     </div>
                 </th>
                 <th
                     class="mdc-data-table__header-cell  "
                     role="columnheader"
                     scope="col"
-                    aria-sort="ascending"
+                    aria-sort="none"
                     data-column-id="recitor"
                 >
                     <div class="mdc-data-table__header-cell-wrapper">
