@@ -2,6 +2,7 @@
 
 namespace Khatam\Controllers;
 
+use JetBrains\PhpStorm\ArrayShape;
 use Khatam\Repositories\KhatamRepository;
 use Khatam\Repositories\KhatamUsersRepository;
 
@@ -58,7 +59,7 @@ class FrontController
     }
 
     /**
-     * Handles user registration for a khatam.
+     * Handles user form submission on the site.
      * Returns JSON response to the client
      *
      * @param array $data
@@ -66,10 +67,33 @@ class FrontController
      */
     public function saveRegistration(array $data)
     {
+        // Make sure action exists
+        if (empty($data['khatam-action'])) {
+            wp_die(json_encode([
+                'success' => false,
+                'message' => 'You need to select an action'
+            ]));
+        }
+
+        $rs = match ($data['khatam-action']) {
+            'register' => $this->processRegsitration($data),
+            'finished' => $this->processCompletion($data),
+            default => json_encode([
+                'success' => false,
+                'message' => 'Invalid action provided'
+            ]),
+        };
+
+        wp_die(json_encode($rs, JSON_PRETTY_PRINT));
+    }
+
+    private function processRegsitration(array $data) : array
+    {
+        error_log(print_r($data, 1));
         $khatam = $this->khatamRepo->getCurrentKhatam();
         $users = $this->khatamRepo->getKhatamUserList($khatam->id);
         if (count($users) == 30) {
-            // There are no empty slots
+
         }
 
         $juz = count($users);
@@ -90,6 +114,17 @@ class FrontController
             'success' => true,
             'juz' => $juz
         ]));
+    }
+
+    #[ArrayShape(['success' => "bool"])]
+    private function processCompletion(array $data) : array
+    {
+        $khatam = $this->khatamRepo->getCurrentKhatam();
+        $this->khatamUserRepo->updateStatus($data['email'], $khatam->id, 1);
+
+        return [
+            'success' => true
+        ];
     }
 }
 

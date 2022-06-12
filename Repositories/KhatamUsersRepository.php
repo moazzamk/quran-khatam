@@ -39,4 +39,17 @@ class KhatamUsersRepository
         return $rs;
     }
 
+    public function updateStatus($email, $khatamId, $status) : bool
+    {
+        return $this->db->update(
+            $this->db->prefix . 'khatams_users',
+            [
+                'status' => $status,
+            ],
+            [
+                'khatam_id' => $khatamId,
+                'user_email' => $email
+            ]
+        );
+    }
 }

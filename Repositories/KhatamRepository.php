@@ -11,7 +11,7 @@ class KhatamRepository {
         $this->db = $db;
     }
 
-    public function insert(array $khatam)
+    public function insert(array $khatam) : int|false
     {
         return $this->db->insert(
             $this->db->prefix . 'khatams',
@@ -27,7 +27,7 @@ class KhatamRepository {
             [ 'id' => $id]);
     }
 
-    public function delete(int $id)
+    public function delete(int $id) : int|false
     {
         return $this->db->delete(
             $this->db->prefix . 'khatams',
