@@ -33,7 +33,7 @@
             <li>
                 <div class="mdc-touch-target-wrapper">
                     <div class="mdc-radio mdc-radio--touch">
-                        <input class="mdc-radio__native-control" type="radio" id="radio-1" name="khatam-action" checked>
+                        <input class="mdc-radio__native-control" type="radio" id="radio-1" name="khatam-action" checked value="register">
                         <div class="mdc-radio__background">
                             <div class="mdc-radio__outer-circle"></div>
                             <div class="mdc-radio__inner-circle"></div>
@@ -46,7 +46,7 @@
             <li>
                 <div class="mdc-touch-target-wrapper">
                     <div class="mdc-radio mdc-radio--touch">
-                        <input class="mdc-radio__native-control" type="radio" id="radio-2" name="khatam-action" checked>
+                        <input class="mdc-radio__native-control" type="radio" id="radio-2" name="khatam-action" value="finished">
                         <div class="mdc-radio__background">
                             <div class="mdc-radio__outer-circle"></div>
                             <div class="mdc-radio__inner-circle"></div>
@@ -65,7 +65,7 @@
                 Name (first, last)
                 <span style="color: red">*</span>
             </span>
-            <input class="mdc-text-field__input texty" type="text" aria-labelledby="my-label-id">
+            <input class="mdc-text-field__input texty" name="name" type="text" aria-labelledby="my-label-id">
             <span class="mdc-line-ripple"></span>
         </label>
     </div>
@@ -76,7 +76,7 @@
                 Email
                 <span style="color: red">*</span>
             </span>
-            <input class="mdc-text-field__input" type="text" aria-labelledby="my-label-id">
+            <input class="mdc-text-field__input" name="email" type="text" aria-labelledby="my-label-id">
             <span class="mdc-line-ripple"></span>
         </label>
     </div>
@@ -90,10 +90,3 @@
         </div>
     </div>
 </form>
-
-<script type="text/javascript">
-
-
-
-
-</script>

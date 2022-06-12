@@ -3,13 +3,18 @@
 namespace Khatam\Controllers;
 
 use Khatam\Repositories\KhatamRepository;
+use Khatam\Repositories\KhatamUsersRepository;
 
 class FrontController
 {
+    private KhatamUsersRepository $khatamUserRepo;
     private KhatamRepository $khatamRepo;
 
-    public function __construct(KhatamRepository $khatamRepo)
-    {
+    public function __construct(
+        KhatamUsersRepository $khatamUserRepo,
+        KhatamRepository $khatamRepo
+    ) {
+        $this->khatamUserRepo = $khatamUserRepo;
         $this->khatamRepo = $khatamRepo;
     }
 
@@ -52,13 +57,39 @@ class FrontController
         return ob_get_clean();
     }
 
-    public function saveRegistration(array $data): string
+    /**
+     * Handles user registration for a khatam.
+     * Returns JSON response to the client
+     *
+     * @param array $data
+     * @return void
+     */
+    public function saveRegistration(array $data)
     {
+        $khatam = $this->khatamRepo->getCurrentKhatam();
+        $users = $this->khatamRepo->getKhatamUserList($khatam->id);
+        if (count($users) == 30) {
+            // There are no empty slots
+        }
 
-        print ' i was called';
+        $juz = count($users);
+        $rs = $this->khatamUserRepo->insert(
+            $data['name'],
+            $data['email'],
+            $khatam->id,
+            $juz
+        );
 
-        error_log('saving registration');
+        if ($rs === false) {
+            wp_die(json_encode([
+                'success' => false
+            ]));
+        }
 
-        return 'hiooo';
+        wp_die(json_encode([
+            'success' => true,
+            'juz' => $juz
+        ]));
     }
 }
+

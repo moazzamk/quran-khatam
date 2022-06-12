@@ -68,6 +68,12 @@ class KhatamRepository {
         return $this->db->get_results($sql);
     }
 
+    /**
+     * Gets a list of users and their details regarding current khatam
+     *
+     * @param int $khatamId
+     * @return array|object|\stdClass[]|null
+     */
     public function getKhatamUserList($khatamId)
     {
         $sql = <<<SQL

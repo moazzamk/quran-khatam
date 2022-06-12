@@ -42,8 +42,9 @@ register_activation_hook(__FILE__, [ '\Khatam\Setup', 'activate' ]);
 register_deactivation_hook(__FILE__, ['\Khatam\Setup', 'deactivate' ]);
 
 $khatamRepo = new \Khatam\Repositories\KhatamRepository($wpdb);
+$khatamUsersRepo = new \Khatam\Repositories\KhatamUsersRepository($wpdb);
 $adminController = new \Khatam\Controllers\AdminController($khatamRepo);
-$frontController = new \Khatam\Controllers\FrontController($khatamRepo);
+$frontController = new \Khatam\Controllers\FrontController($khatamUsersRepo, $khatamRepo);
 
 // The 2 things we will need on the front end
 add_shortcode('khatam_registration_form', [$frontController, 'registration']);

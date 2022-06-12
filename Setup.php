@@ -57,7 +57,7 @@ SQL;
 			CREATE TABLE IF NOT EXISTS {$db->prefix}khatam_users (
 				email varchar(255) NOT NULL,
 				name varchar(255) ,
-				registered_on TIMESTAMP,
+				registered_on TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
 				PRIMARY KEY(email)
 			) $collate;
 SQL;
