@@ -1,0 +1,31 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "khatam/khatam-form",
+  "title": "Khatam Form",
+  "category": "text",
+  "description": "Adds a recitation form for Quran Khatam.",
+  "keywords": [
+    "form"
+  ],
+  "version": "1",
+  "textdomain": "khatam",
+  "editorScript": "file:./index.js",
+  "viewScript": "file:./frontend.js",
+  "script": "",
+  "attributes": {
+    "formBgColor": {
+      "type": "string",
+      "default": "rgba(150, 150, 150, .2)"
+    },
+    "textFieldBgColor": {
+      "type": "string",
+      "default": "rgba(1, 135, 134, .1)"
+    },
+    "submitBgColor": {
+      "type": "string",
+      "default": "#f87171"
+    }
+  },
+  "style": "file:./index.css"
+}
