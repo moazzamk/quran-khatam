@@ -3,6 +3,8 @@
 function kh_rest_api_users_create_handler ($request) {
   require_once(ABSPATH . "/wp-content/plugins/khatam/repositories/khatamUsersRepository.php");
   require_once(ABSPATH . "/wp-content/plugins/khatam/repositories/khatamRepository.php");
+  $currentKhatam = getCurrentKhatam();
+  $users = getKhatamUserList($currentKhatam->id);
 
   $response = ['status' => 1];
   $params = $request->get_json_params();
@@ -12,6 +14,7 @@ function kh_rest_api_users_create_handler ($request) {
     empty($params['email']) ||
     empty($params['names'])
   ) {
+    $response['msg'] = 'Invalid parameters.';
     return $response;
   }
 
@@ -27,21 +30,23 @@ function kh_rest_api_users_create_handler ($request) {
   );
 
   if (!is_email($email)) {
+    $response['msg'] = 'Invalid email address entered.';
     return $response;
   }
 
-  // INSERT INTO DB khatam_users
   foreach($names as $name) {
+    // INSERT INTO DB khatam_users
     KhatamUsersInsert($name['firstName'], $name['lastName'], $email);
+
+    // If user has already signup for current khatam
+    if (user_exists($name, $email, $users)) {
+      $response['msg'] = 'The user already exists.';
+      return $response;
+    }
   }
 
   // ADDING USERS TO CURRENT KHATAM
-  $currentKhatam = getCurrentKhatam();
-  $users = getKhatamUserList($currentKhatam->id);
   $results = [];
-
-  // $response['users'] = $users;
-  // return $response;
 
   if (count($users) >= 30) {
     foreach ($names as $name) {
@@ -62,12 +67,9 @@ function kh_rest_api_users_create_handler ($request) {
     $noOfNamesToAdd = count($names) > $remainingJuz ? 
       $remainingJuz : count($names);
 
-    // $response['noOfNamesToAdd'] = $noOfNamesToAdd;
-    // return $response;
-
-    // Add names that CAN be added to the khatam
+    // Add names to current khatam
     $juz = count($users) === 0 ? 0 : count($users);
-    for ($i = 0; $i < $noOfNamesToAdd; $i++) {
+    foreach ($names as $name) {
       $juz = ++$juz;
 
       // Insert to khatams_users
@@ -88,16 +90,6 @@ function kh_rest_api_users_create_handler ($request) {
         'email' => $email,
         'juz' => $juz,
         'isSuccess' => true
-      ));
-    }
-
-    $namesNotAdded = array_slice($names, $noOfNamesToAdd);
-    foreach ($namesNotAdded as $name) {
-      array_push($results, array(
-        'name' => $name,
-        'email'=> $email,
-        'juz' => NULL,
-        'isSuccess' => false
       ));
     }
   }
@@ -124,4 +116,19 @@ function kh_rest_api_users_read_handler ($request) {
   );
 
   return $response;
+}
+
+// SHOULD RETURN AN ARRAY OF ALREADY EXISTING USERS OR FALSE?
+function user_exists ($name, $email, $users) {
+    foreach($users as $u) {
+    if (
+      // is_array($u) && 
+      $u->email == $email &&
+      $u->firstName == $name['firstName'] &&
+      $u->lastName == $name['lastName']
+    ) {
+      return true;
+    }
+  }
+  return false;
 }

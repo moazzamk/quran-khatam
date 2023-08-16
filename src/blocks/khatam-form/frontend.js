@@ -173,14 +173,21 @@ function KhatamForm ({ availableSpots }) {
           }
         )
       ).json().then(data => {
-        setOpenSlots(data.openSlots);
-
-        const userTableUpdated = new Event ('khatamUpdated');
-        const khDataBlocks = document.querySelectorAll('.kh-users');
-        
-        khDataBlocks.forEach(block => 
-          block.dispatchEvent(userTableUpdated)
-        );
+        if (data.status == 1) {
+          setAlertMsg(data.msg);
+          setShowAlert(true);
+          setAlertSev('error');
+        } else {
+          console.log(data);
+          setOpenSlots(data.openSlots);
+  
+          const userTableUpdated = new Event ('khatamUpdated');
+          const khDataBlocks = document.querySelectorAll('.kh-users');
+          
+          khDataBlocks.forEach(block => 
+            block.dispatchEvent(userTableUpdated)
+          );
+        }
       });
     } else {
       showError('Please fix the errors and try again!');
