@@ -28970,15 +28970,13 @@ function KhatamForm({
     if (+formType === 0) {
       await handleSignup(formData);
     } else if (+formType === 1) {
-      console.log('send data for completing a juz');
+      handleJuzCompleted(formData);
     }
   }
-  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
-    console.log(openSlots);
-  }, [openSlots]);
+  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {}, [openSlots]);
   async function handleSignup(formData) {
     if (isFormValid) {
-      await (await fetch(kh_auth_rest.users, {
+      await (await fetch(kh_auth_rest.signup, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -29000,6 +28998,26 @@ function KhatamForm({
     } else {
       showError('Please fix the errors and try again!');
     }
+  }
+  async function handleJuzCompleted(formData) {
+    await (await fetch(kh_auth_rest.completejuz, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData)
+    })).json().then(data => {
+      if (data.status == 1) {
+        setAlertMsg(data.msg);
+        setShowAlert(true);
+        setAlertSev('error');
+      } else {
+        console.log(data);
+        const userTableUpdated = new Event('khatamUpdated');
+        const khDataBlocks = document.querySelectorAll('.kh-users');
+        khDataBlocks.forEach(block => block.dispatchEvent(userTableUpdated));
+      }
+    });
   }
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)(_mui_material_styles__WEBPACK_IMPORTED_MODULE_3__["default"], {
     theme: theme

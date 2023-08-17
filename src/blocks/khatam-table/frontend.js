@@ -4,13 +4,18 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
   TableRow,
+  Chip,
 } from '@mui/material';
+import { red, blue, green } from '@mui/material/colors';
 import { ThemeProvider, createTheme } from '@mui/material/styles'; 
 
 const theme = createTheme({
+  // palette: {
+  //   primary: blue,
+  //   warning: red,
+  // },
   typography: {
     allVariants: {
       fontFamily: "'Open Sans', Roboto, sans-serif",
@@ -24,7 +29,7 @@ function KhatamTable () {
   const [khatamUsers, setKhatamUsers] = useState([]);
 
   async function getKhatamUsers () {
-    const res = await fetch(kh_auth_rest.users, {
+    const res = await fetch(kh_auth_rest.currentKhatam, {
       method: 'GET',
     });
 
@@ -60,7 +65,13 @@ function KhatamTable () {
                 <TableRow>
                   <TableCell>{ row.juz }</TableCell>
                   <TableCell>{ `${row.firstName} ${row.lastName}` }</TableCell>
-                  <TableCell>{ +row.status === 0 ? 'In Progress' : 'Completed' }</TableCell>
+                  <TableCell>
+                    <Chip 
+                    label={+row.status === 0 ? 'In Progress' : 'Completed'}
+                    color={+row.status === 0 ? 'warning' : "success" }
+                    size="small"
+                    />
+                  </TableCell>
                 </TableRow>
               )
             }
