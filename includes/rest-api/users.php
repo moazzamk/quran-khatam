@@ -3,7 +3,9 @@
 function kh_rest_api_users_create_handler ($request) {
   require_once(ABSPATH . "/wp-content/plugins/khatam/repositories/khatamUsersRepository.php");
   require_once(ABSPATH . "/wp-content/plugins/khatam/repositories/khatamRepository.php");
-
+  $currentKhatam = getCurrentKhatam();
+  $users = getKhatamUserList($currentKhatam->id);
+  $results = [];
   $response = ['status' => 1];
   $params = $request->get_json_params();
 
@@ -30,53 +32,38 @@ function kh_rest_api_users_create_handler ($request) {
     return $response;
   }
 
-  // INSERT INTO DB khatam_users
+  $userMatches = [];
   foreach($names as $name) {
+    // INSERT INTO DB khatam_users
     KhatamUsersInsert($name['firstName'], $name['lastName'], $email);
 
-    // If user has already signup for current khatam
-    $userMatches = user_exists($name, $email, $users);
-    if ($userMatches) {
-      $response['msg'] = 'The user(s) have already signed up for current khatam.';
-      $response['data'] = $userMatches;
-
-      return $response;
+    // CHECK IF USER HAS ALREADY SIGNED UP FOR CURRENT KHATAM
+    $userFound = user_exists($name, $email, $users);
+    if ($userFound != false) {
+      array_push($userMatches, $userFound);
     }
   }
 
+  // RETURN ERROR IF DUPLICATES FOUND
+  if (count($userMatches) > 0) {
+    $response['msg'] = 'The user(s) have already signed up for current khatam.';
+    $response['data'] = $userMatches;
+
+    return $response;
+  }
+
   // ADDING USERS TO CURRENT KHATAM
-  $currentKhatam = getCurrentKhatam();
-  $users = getKhatamUserList($currentKhatam->id);
-  $results = [];
-
-  // $response['users'] = $users;
-  // return $response;
-
   if (count($users) >= 30) {
-    foreach ($names as $name) {
-      array_push(
-        $results,
-        array(
-          'name' => $name,
-          'email' => $email,
-          'juz' => '---',
-          'isSuccess' => false
-        )
-      );
-    }
-    $response['results'] = $results;
+    $response['msg'] = 'The current khatam is full.';
     return $response;
   } else {
     $remainingJuz = 30 - count($users);
     $noOfNamesToAdd = count($names) > $remainingJuz ? 
       $remainingJuz : count($names);
 
-    // $response['noOfNamesToAdd'] = $noOfNamesToAdd;
-    // return $response;
-
     // Add names that CAN be added to the khatam
     $juz = count($users) === 0 ? 0 : count($users);
-    for ($i = 0; $i < $noOfNamesToAdd; $i++) {
+    foreach ($names as $name) {
       $juz = ++$juz;
 
       // Insert to khatams_users
@@ -89,6 +76,7 @@ function kh_rest_api_users_create_handler ($request) {
       );
 
       if ($rs === false) {
+        $response['msg'] = 'Error adding users to current khatam.';
         return $response;
       }
 
@@ -97,16 +85,6 @@ function kh_rest_api_users_create_handler ($request) {
         'email' => $email,
         'juz' => $juz,
         'isSuccess' => true
-      ));
-    }
-
-    $namesNotAdded = array_slice($names, $noOfNamesToAdd);
-    foreach ($namesNotAdded as $name) {
-      array_push($results, array(
-        'name' => $name,
-        'email'=> $email,
-        'juz' => NULL,
-        'isSuccess' => false
       ));
     }
   }
@@ -137,19 +115,15 @@ function kh_rest_api_users_read_handler ($request) {
 
 // SHOULD RETURN AN ARRAY OF ALREADY EXISTING USERS OR FALSE?
 function user_exists ($name, $email, $users) {
-  $userMatches = [];
-    foreach($users as $u) {
+  foreach($users as $u) {
     if (
       $u->email == $email &&
       $u->firstName == $name['firstName'] &&
       $u->lastName == $name['lastName']
     ) {
-      array_push($userMatches, $u);
+     return $u;
     }
   }
 
-  if (count($userMatches) > 0) {
-    return $userMatches;
-  }
   return false;
 }
