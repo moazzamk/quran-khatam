@@ -3,8 +3,6 @@
 function kh_rest_api_users_create_handler ($request) {
   require_once(ABSPATH . "/wp-content/plugins/khatam/repositories/khatamUsersRepository.php");
   require_once(ABSPATH . "/wp-content/plugins/khatam/repositories/khatamRepository.php");
-  $currentKhatam = getCurrentKhatam();
-  $users = getKhatamUserList($currentKhatam->id);
 
   $response = ['status' => 1];
   $params = $request->get_json_params();
@@ -14,7 +12,6 @@ function kh_rest_api_users_create_handler ($request) {
     empty($params['email']) ||
     empty($params['names'])
   ) {
-    $response['msg'] = 'Invalid parameters.';
     return $response;
   }
 
@@ -30,12 +27,11 @@ function kh_rest_api_users_create_handler ($request) {
   );
 
   if (!is_email($email)) {
-    $response['msg'] = 'Invalid email address entered.';
     return $response;
   }
 
+  // INSERT INTO DB khatam_users
   foreach($names as $name) {
-    // INSERT INTO DB khatam_users
     KhatamUsersInsert($name['firstName'], $name['lastName'], $email);
 
     // If user has already signup for current khatam
@@ -49,7 +45,12 @@ function kh_rest_api_users_create_handler ($request) {
   }
 
   // ADDING USERS TO CURRENT KHATAM
+  $currentKhatam = getCurrentKhatam();
+  $users = getKhatamUserList($currentKhatam->id);
   $results = [];
+
+  // $response['users'] = $users;
+  // return $response;
 
   if (count($users) >= 30) {
     foreach ($names as $name) {
@@ -70,9 +71,12 @@ function kh_rest_api_users_create_handler ($request) {
     $noOfNamesToAdd = count($names) > $remainingJuz ? 
       $remainingJuz : count($names);
 
-    // Add names to current khatam
+    // $response['noOfNamesToAdd'] = $noOfNamesToAdd;
+    // return $response;
+
+    // Add names that CAN be added to the khatam
     $juz = count($users) === 0 ? 0 : count($users);
-    foreach ($names as $name) {
+    for ($i = 0; $i < $noOfNamesToAdd; $i++) {
       $juz = ++$juz;
 
       // Insert to khatams_users
@@ -93,6 +97,16 @@ function kh_rest_api_users_create_handler ($request) {
         'email' => $email,
         'juz' => $juz,
         'isSuccess' => true
+      ));
+    }
+
+    $namesNotAdded = array_slice($names, $noOfNamesToAdd);
+    foreach ($namesNotAdded as $name) {
+      array_push($results, array(
+        'name' => $name,
+        'email'=> $email,
+        'juz' => NULL,
+        'isSuccess' => false
       ));
     }
   }
