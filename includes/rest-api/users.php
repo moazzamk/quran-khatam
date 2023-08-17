@@ -39,8 +39,11 @@ function kh_rest_api_users_create_handler ($request) {
     KhatamUsersInsert($name['firstName'], $name['lastName'], $email);
 
     // If user has already signup for current khatam
-    if (user_exists($name, $email, $users)) {
-      $response['msg'] = 'The user already exists.';
+    $userMatches = user_exists($name, $email, $users);
+    if ($userMatches) {
+      $response['msg'] = 'The user(s) have already signed up for current khatam.';
+      $response['data'] = $userMatches;
+
       return $response;
     }
   }
@@ -120,15 +123,19 @@ function kh_rest_api_users_read_handler ($request) {
 
 // SHOULD RETURN AN ARRAY OF ALREADY EXISTING USERS OR FALSE?
 function user_exists ($name, $email, $users) {
+  $userMatches = [];
     foreach($users as $u) {
     if (
-      // is_array($u) && 
       $u->email == $email &&
       $u->firstName == $name['firstName'] &&
       $u->lastName == $name['lastName']
     ) {
-      return true;
+      array_push($userMatches, $u);
     }
+  }
+
+  if (count($userMatches) > 0) {
+    return $userMatches;
   }
   return false;
 }
