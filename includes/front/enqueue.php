@@ -47,8 +47,9 @@ function kh_enqueue_scripts () {
 
   // REST END POINTS
   $authUrls = json_encode([
-    'users' => esc_url_raw(rest_url('/kh/v1/currentKharam/users')),
-    'signin' => esc_url_raw(rest_url('kh/v1/currentKharam/complete'))
+    'currentKhatam' => esc_url_raw(rest_url('/kh/v1/currentKhatam')),
+    'signup' => esc_url_raw(rest_url('/kh/v1/currentKhatam/signup')),
+    'completejuz' => esc_url_raw(rest_url('kh/v1/currentKhatam/completejuz'))
   ]);
 
   wp_add_inline_script(

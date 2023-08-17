@@ -2,22 +2,24 @@
 
 // Creating End Points
 function kh_rest_api_init () {
-  // example.com/wp-json/wd/v1/signup
-  register_rest_route('kh/v1', '/currentKharam/users', [
+  // CURRENT KHATAM SIGNUP
+  register_rest_route('kh/v1', '/currentKhatam/signup', [
     'methods' => WP_REST_SERVER::CREATABLE,
-    'callback' => 'kh_rest_api_users_create_handler',
+    'callback' => 'kh_rest_api_current_khatam_singup_handler',
     'permission_callback' => '__return_true'
   ]);
-  register_rest_route('kh/v1', '/currentKharam/users', [
+
+  // CURRENT KHATAM COMPLETE JUZ
+  register_rest_route('kh/v1', '/currentKhatam/completejuz', [
+    'methods' => WP_REST_SERVER::CREATABLE,
+    'callback' => 'kh_rest_api_current_khatam_complete_juz_handler',
+    'permission_callback' => '__return_true'
+  ]);
+
+  // CURRENT KHATAM USERS
+  register_rest_route('kh/v1', '/currentKhatam', [
     'methods' => WP_REST_SERVER::READABLE,
-    'callback' => 'kh_rest_api_users_read_handler',
-    'permission_callback' => '__return_true'
-  ]);
-
-
-  register_rest_route('kh/v1', '/complete', [
-    'methods' => WP_REST_SERVER::EDITABLE,
-    'callback' => 'kh_rest_api_complete_handler',
+    'callback' => 'kh_rest_api_current_khatam_read_handler',
     'permission_callback' => '__return_true'
   ]);
 }

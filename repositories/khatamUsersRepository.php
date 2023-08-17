@@ -1,29 +1,35 @@
 <?php
 
-function khatamsUsersInsert($email, $firstName, $lastName, $khatamId=0, $juz=0) {
+function khatamsUsersInsert(
+  $email, $firstName, $lastName, $khatamId=0, $juz=0
+) {
   global $wpdb;
 
-  if ($khatamId > 0) {
-    $rs = $wpdb->insert(
-      $wpdb->prefix . 'khatams_users',
-      [
-        'khatam_id' => $khatamId,
-        'user_email' => $email,
-        'first_name' => $firstName,
-        'last_name' => $lastName,
-        'juz_num' => $juz
-      ]
-    );
+  if ($khatamId <= 0 || $khatamId == null) {
+    return false;
+  }
 
-    if ($rs === false) {
-      return $rs;
-    }
+  $rs = $wpdb->insert(
+    $wpdb->prefix . 'khatams_users',
+    [
+      'user_email' => $email,
+      'first_name' => $firstName,
+      'last_name' => $lastName,
+      'khatam_id' => $khatamId,
+      'juz_num' => $juz
+    ]
+  );
+  
+  if ($rs === false) {
+    return $rs;
   }
 
   return $rs;
 }
 
-function khatamsUsersUpdateStatus($email, $khatamId, $status) : bool {
+function khatamsUsersUpdateStatus(
+  $email, $firstName, $lastName, $khatamId, $status
+) : bool {
   global $wpdb;
 
   return $wpdb->update(
@@ -33,7 +39,9 @@ function khatamsUsersUpdateStatus($email, $khatamId, $status) : bool {
     ],
     [
       'khatam_id' => $khatamId,
-      'user_email' => $email
+      'user_email' => $email,
+      'first_name' => $firstName,
+      'last_name' => $lastName
     ]
   );
 }
