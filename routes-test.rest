@@ -1,0 +1,11 @@
+### JUZ COMPLETED
+POST http://qurankhatam.local/wp-json/kh/v1/currentKhatam/completejuz
+Content-Type: application/json
+
+{
+  "names": [
+    "John Smith",
+    "Jane Eyre"
+  ],
+  "email": "j.smith@gmail.com"
+}
