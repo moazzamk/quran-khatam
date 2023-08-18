@@ -9,7 +9,7 @@ import {
   Chip,
   TextField,
 } from '@mui/material';
-import { grey } from '@mui/material/colors';
+import { orange, green, grey } from '@mui/material/colors';
 import { ThemeProvider, createTheme } from '@mui/material/styles'; 
 
 const theme = createTheme({
@@ -38,7 +38,7 @@ function KhatamTable () {
 
     res.json().then(data => {
       setKhatamUsers(data.data.map(u => {
-        u.status = u.status.includes('0') ? 'In progress' : 'Completed';
+        u.status = u.status.includes('0') ? 'in progress' : 'completed';
         return u;
       }));
     });
@@ -77,7 +77,7 @@ function KhatamTable () {
           background: grey['50']
         }}
       >
-        <div className="search-container">
+        <div className="kh-table-search-container">
           <TextField 
             id="khTableSearch" 
             label="Search" 
@@ -109,8 +109,8 @@ function KhatamTable () {
                     <TableCell>
                       <Chip 
                       label={row.status}
-                      color={row.status == 'Completed' ? 'success' : "warning" }
                       size="small"
+                      sx={{ background: row.status == 'completed' ? green['A200'] : orange['200'] }}
                       />
                     </TableCell>
                   </TableRow>
