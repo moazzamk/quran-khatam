@@ -1,14 +1,15 @@
 import { render, useState, useEffect } from '@wordpress/element';
 import {
-  Box,
+  Paper,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
   Chip,
+  TextField,
 } from '@mui/material';
-import { red, blue, green } from '@mui/material/colors';
+import { grey } from '@mui/material/colors';
 import { ThemeProvider, createTheme } from '@mui/material/styles'; 
 
 const theme = createTheme({
@@ -27,13 +28,20 @@ import icons from '../../icons';
 
 function KhatamTable () {
   const [khatamUsers, setKhatamUsers] = useState([]);
+  const [displayUsers, setDisplayUsers] = useState();
+  const [tableSearch, setTableSearch] = useState('');
 
   async function getKhatamUsers () {
     const res = await fetch(kh_auth_rest.currentKhatam, {
       method: 'GET',
     });
 
-    res.json().then(data => setKhatamUsers([...data.data]));
+    res.json().then(data => {
+      setKhatamUsers(data.data.map(u => {
+        u.status = u.status.includes('0') ? 'In progress' : 'Completed';
+        return u;
+      }));
+    });
   }
 
   useEffect(
@@ -44,13 +52,45 @@ function KhatamTable () {
       });
   
       getKhatamUsers();
-    }
-    , []
+    },
+    []
   );
+
+  useEffect(() => {
+    setDisplayUsers(khatamUsers.filter(u => 
+      u.firstName.includes(tableSearch) ||
+      u.lastName.includes(tableSearch) ||
+      u.status.includes(tableSearch) ||
+      u.juz == +tableSearch
+    ));
+  }, [tableSearch]);
+
+  useEffect(() => {
+    setDisplayUsers(khatamUsers);
+  }, [khatamUsers]);
 
   return (
     <ThemeProvider theme={ theme }>
-      <Box sx={{ border: '1px dashed grey' }}>
+      <Paper 
+        elevation={2}
+        sx={{ 
+          background: grey['50']
+        }}
+      >
+        <div className="search-container">
+          <TextField 
+            id="khTableSearch" 
+            label="Search" 
+            variant="outlined"
+            size="small"
+            sx={{ 
+              width: '96%',
+              background: grey['100']
+            }}
+            value={ tableSearch }
+            onChange={e => setTableSearch(e.target.value) }
+          />
+        </div>
         <Table>
           <TableHead>
             <TableRow>
@@ -59,29 +99,34 @@ function KhatamTable () {
               <TableCell>Status</TableCell>
             </TableRow>
           </TableHead>
-          <TableBody>
-            {
-              khatamUsers.map(row =>
+          <TableBody id="kh-recitation-table">
+            { displayUsers != null && displayUsers.length > 0 ? 
+              (
+                displayUsers.map(row =>
+                  <TableRow>
+                    <TableCell>{ row.juz }</TableCell>
+                    <TableCell>{ `${row.firstName} ${row.lastName}` }</TableCell>
+                    <TableCell>
+                      <Chip 
+                      label={row.status}
+                      color={row.status == 'Completed' ? 'success' : "warning" }
+                      size="small"
+                      />
+                    </TableCell>
+                  </TableRow>
+                )
+              ) : (
                 <TableRow>
-                  <TableCell>{ row.juz }</TableCell>
-                  <TableCell>{ `${row.firstName} ${row.lastName}` }</TableCell>
-                  <TableCell>
-                    <Chip 
-                    label={+row.status === 0 ? 'In Progress' : 'Completed'}
-                    color={+row.status === 0 ? 'warning' : "success" }
-                    size="small"
-                    />
-                  </TableCell>
+                  <TableCell colSpan={3}>No matching records found</TableCell>
                 </TableRow>
               )
             }
           </TableBody>
         </Table>
-      </Box>
+      </Paper>
     </ThemeProvider>
   );
 }
-
 
 document.addEventListener('DOMContentLoaded', () => {
   let block = document.querySelector('#kh-table-container');

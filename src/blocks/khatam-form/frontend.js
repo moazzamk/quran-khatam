@@ -128,7 +128,6 @@ function KhatamForm ({ availableSpots }) {
   // SHOW ERROR ALERT -- IF CURRENT KHATAM IS FULL
   useEffect(() => {
     setIsKhatamFull(+openSlots == 0 ? true : false);
-    console.log('formType: ' + formType);
     if (isKhatamFull) {
       setShowAlert(true);
       setAlertMsg('Current Khatam is full!');
