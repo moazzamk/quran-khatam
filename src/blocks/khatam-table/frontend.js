@@ -1,22 +1,12 @@
 import { render, useState, useEffect } from '@wordpress/element';
 import {
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Chip,
-  TextField,
+  Paper, Chip
 } from '@mui/material';
+import { DataGrid, GridToolbarQuickFilter, } from '@mui/x-data-grid';
 import { orange, green, grey } from '@mui/material/colors';
 import { ThemeProvider, createTheme } from '@mui/material/styles'; 
 
 const theme = createTheme({
-  // palette: {
-  //   primary: blue,
-  //   warning: red,
-  // },
   typography: {
     allVariants: {
       fontFamily: "'Open Sans', Roboto, sans-serif",
@@ -28,8 +18,6 @@ import icons from '../../icons';
 
 function KhatamTable () {
   const [khatamUsers, setKhatamUsers] = useState([]);
-  const [displayUsers, setDisplayUsers] = useState();
-  const [tableSearch, setTableSearch] = useState('');
 
   async function getKhatamUsers () {
     const res = await fetch(kh_auth_rest.currentKhatam, {
@@ -37,6 +25,7 @@ function KhatamTable () {
     });
 
     res.json().then(data => {
+      console.log(data);
       setKhatamUsers(data.data.map(u => {
         u.status = u.status.includes('0') ? 'in progress' : 'completed';
         return u;
@@ -56,73 +45,98 @@ function KhatamTable () {
     []
   );
 
-  useEffect(() => {
-    setDisplayUsers(khatamUsers.filter(u => 
-      u.firstName.includes(tableSearch) ||
-      u.lastName.includes(tableSearch) ||
-      u.status.includes(tableSearch) ||
-      u.juz == +tableSearch
-    ));
-  }, [tableSearch]);
+  const columns = [
+    {
+      field: 'juz', 
+      headerName: 'Juz', 
+      type: 'bumber', 
+      flex: .2, 
+    },
+    { 
+      field: 'fullName', 
+      headerName: 'Full name', 
+      description: 'This column has a value getter and is not sortable.', 
+      flex: .6, 
+      // width: 100,
+      valueGetter: (params) => `${params.row.firstName || ''} ${params.row.lastName || ''}` 
+    },
+    { 
+      field: 'status', 
+      headerName: 'Status', 
+      flex: .2,
+      renderCell: (params) => {
+        return (
+          <Chip 
+            label={ params.row.status }
+            sx={{ 
+              background: params.row.status == 'completed' ? green['A200'] : orange['A100'],
+            }}
+            size='small'
+          />
+        )
+      }
+    },
+  ];
 
-  useEffect(() => {
-    setDisplayUsers(khatamUsers);
-  }, [khatamUsers]);
+  function QuickSearchToolbar() {
+    return (
+      <div 
+        style={{
+          padding: '1rem'
+        }}
+      >
+        <GridToolbarQuickFilter 
+          fullWidth
+          size='medium'
+          variant='outlined'
+          sx={{
+            background: grey[100],
+            width: '100%'
+          }}
+        />
+      </div>
+    );
+  }
 
   return (
     <ThemeProvider theme={ theme }>
-      <Paper 
+      <Paper
         elevation={2}
-        sx={{ 
-          background: grey['50']
-        }}
       >
-        <div className="kh-table-search-container">
-          <TextField 
-            id="khTableSearch" 
-            label="Search" 
-            variant="outlined"
-            size="small"
-            sx={{ 
-              width: '96%',
-              background: grey['100']
-            }}
-            value={ tableSearch }
-            onChange={e => setTableSearch(e.target.value) }
-          />
-        </div>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Juz</TableCell>
-              <TableCell>Reciter</TableCell>
-              <TableCell>Status</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody id="kh-recitation-table">
-            { displayUsers != null && displayUsers.length > 0 ? 
-              (
-                displayUsers.map(row =>
-                  <TableRow>
-                    <TableCell>{ row.juz }</TableCell>
-                    <TableCell>{ `${row.firstName} ${row.lastName}` }</TableCell>
-                    <TableCell>
-                      <Chip 
-                      label={row.status}
-                      size="small"
-                      sx={{ background: row.status == 'completed' ? green['A200'] : orange['200'] }}
-                      />
-                    </TableCell>
-                  </TableRow>
-                )
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={3}>No matching records found</TableCell>
-                </TableRow>
-              )
-            }
-          </TableBody>
-        </Table>
+      <DataGrid
+        rows={khatamUsers}
+        columns={columns}
+        initialState={{
+          pagination: {
+            paginationModel: {
+              pageSize: 5,
+            },
+          },
+          filter: {
+            khatamUsers,
+            filterModel: {
+              items: [],
+              quickFilterValues: [],
+            },
+          },
+        }}
+        disableColumnFilter
+        disableColumnSelector
+        disableDensitySelector
+        slots={{ toolbar: QuickSearchToolbar }}
+        slotProps={{
+          toolbar: {
+            showQuickFilter: true,
+          },
+        }}
+        pageSizeOptions={[5]}
+        getRowId={(row) => +row.juz}
+        autoHeight
+        sx={{ 
+          background: grey[50],
+          textTransform: 'capitalize'
+        }}
+      />
       </Paper>
     </ThemeProvider>
   );
