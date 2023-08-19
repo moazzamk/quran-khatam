@@ -28,7 +28,8 @@
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.14.3",
-    "@mui/material": "^5.14.2"
+    "@mui/material": "^5.14.2",
+    "@mui/x-data-grid": "^6.11.2"
   },
   "peerDependencies": {
     "react": "^17.0.0 || ^18.0.0",
