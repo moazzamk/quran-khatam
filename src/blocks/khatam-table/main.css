@@ -7,26 +7,5 @@
 /***************************/
 /* FRONTEND & FSE SETTINGS */
 /***************************/
-/* #kh-table-container {
-  display: flex;
-  flex-direction: column;
-}
 
-#kh-table-container tbody td {
-  text-transform: capitalize;
-}
-
-.kh-table-juz-completed {
-  background: rgba(255, 125, 15, .8);
-  border-radius: .3rem;
-  color: white;
-  padding: .3rem;
-}
-
-.kh-table-search-container {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: .8rem;
-} */
+/* TESTING */
