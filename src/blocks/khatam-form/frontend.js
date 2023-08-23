@@ -33,7 +33,7 @@ function KhatamForm ({ availableSpots }) {
   const [showModal, setShowModal] = useState(false);
   const [addedUsers, setAddedUsers] = useState([]);
 
-  const myRef = useRef();
+  const alertRef = useRef();
 
   function resetAlert() {
     setShowAlert(false);
@@ -55,20 +55,9 @@ function KhatamForm ({ availableSpots }) {
 
   useEffect(() => {
     if (doAlertReset) {
-      myRef.current?.focus();
       resetAlert();
     }
   }, [doAlertReset])
-
-  const addedUsers1 =[
-    { juz: 12, reciter: 'John Do' },
-    { juz: 12, reciter: 'Michael Fo' },
-    { juz: 12, reciter: 'Wassim Ak' },
-    { juz: 12, reciter: 'Irfan Pa' },
-    { juz: 12, reciter: 'Shoaib Ak' },
-    { juz: 12, reciter: 'Sachin Te' },
-    { juz: 12, reciter: 'Ricky Po' },
-  ];
 
   return (
     <ThemeProvider theme={ theme }>
@@ -81,7 +70,7 @@ function KhatamForm ({ availableSpots }) {
         <SuccessTable users={addedUsers}/>
       </ModalAlert>
 
-      <Alert severity={alertSev} ref={ref => ref && ref.focus()} sx={{
+      <Alert severity={alertSev} ref={alertRef} sx={{
         marginBottom: 2,
       }} >{ alertMsg }</Alert>
 
@@ -91,7 +80,7 @@ function KhatamForm ({ availableSpots }) {
         setDoAlertReset={setDoAlertReset}
         setShowModal={setShowModal}
         setAddedUsers={setAddedUsers}
-        refProp={myRef}
+        alertRef={alertRef}
       />
     </ThemeProvider>
   );

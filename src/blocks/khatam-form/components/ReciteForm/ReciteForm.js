@@ -21,7 +21,12 @@ import { Stack } from '@mui/system';
 import icons from '../../../../icons';
 
 export default function ReciteForm ({
-  availableSpots, setAlertMsg, setDoAlertReset, setShowModal, setAddedUsers
+  availableSpots, 
+  setAlertMsg, 
+  setDoAlertReset, 
+  setShowModal, 
+  setAddedUsers,
+  alertRef
 }) {
   const [ formType, setFormType ] = useState(0);
   const [ names, setNames ] = useState([]);
@@ -39,6 +44,14 @@ export default function ReciteForm ({
   function resetNamesError() {
     setIsNamesError(false);
     setNamesError('');
+  }
+
+  function showError (msg) {
+    setAlertMsg(msg);
+    window.scrollTo({
+      top: alertRef.current.offsetTop,
+      behavior: 'smooth'
+    });
   }
 
   // NAME(S) VALIDATION VARS
@@ -102,7 +115,7 @@ export default function ReciteForm ({
       // If names > available slots
       if (names.length > openSlots) {
         let noOfUsersToRemove = names.length - openSlots;
-        setAlertMsg(`
+        showError(`
           There ${openSlots > 1 ? 'are' : 'is'} only ${openSlots} open spot${openSlots > 1 ? 's' : ''} in current khatam. 
           Please remove ${noOfUsersToRemove} name${noOfUsersToRemove > 1 ? 's': ''} and try again.
         `);
@@ -122,7 +135,7 @@ export default function ReciteForm ({
   useEffect(() => {
     setIsKhatamFull(+openSlots == 0 ? true : false);
     if (isKhatamFull) {
-      setAlertMsg('Current Khatam is full!');
+      showError('Current Khatam is full!');
     }
   }, [openSlots, isKhatamFull]);
 
@@ -137,18 +150,18 @@ export default function ReciteForm ({
 
     // If no option is selected
     if (+formType !== 1 && +formType !== 2) {
-      setAlertMsg('Please select the appropriate option');
+      showError('Please select the appropriate option');
     }
   
     // If current khatam is full
     if (+formType === 1 && isKhatamFull) {
-      setAlertMsg('Current Khatam is full!');
+      showError('Current Khatam is full!');
       return;
     }
 
     // If names are invalid
     if (isNamesError) {
-      setAlertMsg('Please fix the errors below and try again.');
+      showError('Please fix the errors below and try again.');
       return;
     }
 
