@@ -50,7 +50,7 @@ export default function ReciteForm ({
     setAlertMsg(msg);
     window.scrollTo({
       top: alertRef.current.offsetTop,
-      behavior: 'smooth'
+      behavior: 'smooth',
     });
   }
 
