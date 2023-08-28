@@ -1,4 +1,4 @@
-import { render, useState, useEffect } from '@wordpress/element';
+import { render, useState, useEffect, useRef } from '@wordpress/element';
 import {
 	Button,
 	Card, 
@@ -21,7 +21,8 @@ import { Stack } from '@mui/system';
 import icons from '../../../../icons';
 
 export default function ReciteForm ({
-  availableSpots, 
+  availableSpots,
+  alertMsg,
   setAlertMsg, 
   setDoAlertReset, 
   setShowModal, 
@@ -34,6 +35,8 @@ export default function ReciteForm ({
   const [ isFormValid, setIsFormValid ] = useState(true);
 
   const [openSlots, setOpenSlots] = useState(availableSpots);
+
+  const [signupBtnChecked, setSignupBtnChecked] = useState(false);
 
   function throwNamesError (msg) {
     setIsFormValid(false);
@@ -119,6 +122,8 @@ export default function ReciteForm ({
           There ${openSlots > 1 ? 'are' : 'is'} only ${openSlots} open spot${openSlots > 1 ? 's' : ''} in current khatam. 
           Please remove ${noOfUsersToRemove} name${noOfUsersToRemove > 1 ? 's': ''} and try again.
         `);
+        setIsNamesError(true);
+        return;
       } else {
         setAlertMsg(null)
       }
@@ -129,17 +134,38 @@ export default function ReciteForm ({
 
     setIsFormValid(true);
     resetNamesError();
-  }, [names, isFormValid, isNamesError]);
+  }, [names, isFormValid, isNamesError, formType]);
 
   // SHOW ERROR ALERT -- IF CURRENT KHATAM IS FULL
   useEffect(() => {
     setIsKhatamFull(+openSlots == 0 ? true : false);
     if (isKhatamFull) {
+      setSignupBtnChecked(false);
       showError('Current Khatam is full!');
     }
+    console.log(isKhatamFull);
   }, [openSlots, isKhatamFull]);
 
-  useEffect(() => {}, [openSlots]);
+  useEffect(() => {}, [openSlots, isNamesError]);
+
+  // EMAIL VALIDATION
+  const [emailError, setEmailError] = useState(null);
+  const [isEmailError, setIsEmailError] = useState(false)
+  function validateEmail(e) {
+    e.preventDefault();
+    const emailStr = e.target.value;
+    const isEmailValid = emailStr.match(
+      /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    );
+
+    if (!isEmailValid) {
+      setIsEmailError(true);
+      setEmailError("Enter a valid email address")
+    } else {
+      setIsEmailError(false);
+      setEmailError(null);
+    }
+  }
 
   async function handleKhatamFormSubmit (e) {
     e.preventDefault();
@@ -156,6 +182,12 @@ export default function ReciteForm ({
     // If current khatam is full
     if (+formType === 1 && isKhatamFull) {
       showError('Current Khatam is full!');
+      return;
+    }
+
+    // If not enough spots available
+    if (isNamesError && alertMsg !== null) {
+      showError(alertMsg);
       return;
     }
 
@@ -256,22 +288,24 @@ export default function ReciteForm ({
                   Please Select One
                 </Typography>
               </FormLabel>
-              <RadioGroup 
-                aria-labelledby='kh-form-type' 
+              <RadioGroup
+                aria-labelledby='kh-form-type'
                 name="khFormType"
                 onChange={e => setFormType(e.target.value)}
               >
-                <FormControlLabel 
-                  value={1} 
+                <FormControlLabel
+                  value={1}
                   control={<Radio size="small" />}
                   label={isKhatamFull ?
                     <span>Current khatam is full</span> :
                     "I want to recite"
                   }
                   disabled={ isKhatamFull }
+                  checked={ signupBtnChecked }
+                  onChange={e => setSignupBtnChecked(!!e.target.value)}
                 />
-                <FormControlLabel 
-                  value={2} 
+                <FormControlLabel
+                  value={2}
                   control={<Radio size="small" />}
                   label="I completed recitation"
                 />
@@ -301,6 +335,13 @@ export default function ReciteForm ({
                 required
                 value={ email }
                 onChange={e => setEmail(e.target.value)}
+                onBlur={e => validateEmail(e)}
+                helperText={ 
+                  isEmailError ? 
+                  emailError : 
+                  null
+                }
+                error={ isEmailError }
               />
             </FormControl>
           </Stack>

@@ -33,30 +33,35 @@ registerBlockType(block.name, {
   edit({ attributes, setAttributes }) {
     
     return (<>
-			<ThemeProvider theme={ theme }>
-				<Box sx={{ border: '1px dashed grey' }}>
-					<Table>
-						<TableHead>
-							<TableRow>
-								<TableCell>Juz</TableCell>
-								<TableCell>Reciter</TableCell>
-								<TableCell>Status</TableCell>
-							</TableRow>
-						</TableHead>
-						<TableBody>
-							{
-								rows.map(row =>
-									<TableRow>
-										<TableCell>{ row.juz }</TableCell>
-										<TableCell>{ row.reciter }</TableCell>
-										<TableCell>{ row.status }</TableCell>
-									</TableRow>
-								)
-							}
-						</TableBody>
-					</Table>
-				</Box>
-			</ThemeProvider>
+			<section id="kh-editor-table">
+				<h2>Khatam Recitation Table</h2>
+				<table>
+					<thead>
+						<tr>
+							<th>Juz</th>
+							<th>Reciter</th>
+							<th>Status</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>1</td>
+							<td>John Doe</td>
+							<td>Completed</td>
+						</tr>
+						<tr>
+							<td>2</td>
+							<td>Jane Doe</td>
+							<td>In progress</td>
+						</tr>
+						<tr>
+							<td>3</td>
+							<td>Jamie Doe</td>
+							<td>In progress</td>
+						</tr>
+					</tbody>
+				</table>
+			</section>
 			
     </>);
   },

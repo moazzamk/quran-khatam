@@ -76,6 +76,7 @@ function KhatamForm ({ availableSpots }) {
 
       <ReciteForm 
         availableSpots={availableSpots} 
+        alertMsg = {alertMsg}
         setAlertMsg={setAlertMsg}
         setDoAlertReset={setDoAlertReset}
         setShowModal={setShowModal}

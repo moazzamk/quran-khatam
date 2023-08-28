@@ -58,8 +58,11 @@ function kh_rest_api_current_khatam_singup_handler ($request) {
     return $response;
   } else {
     $remainingJuz = 30 - count($users);
-    $noOfNamesToAdd = count($names) > $remainingJuz ? 
-      $remainingJuz : count($names);
+    
+    if (count($names) > $remainingJuz) {
+      $response['msg'] = "Not enough available spots";
+      return $response;
+    }
 
     // Add names that CAN be added to the khatam
     $juz = count($users) === 0 ? 0 : count($users);
@@ -90,7 +93,7 @@ function kh_rest_api_current_khatam_singup_handler ($request) {
   }
 
   $response['results'] = $results;
-  $response['openSlots'] = $remainingJuz - $noOfNamesToAdd;
+  $response['openSlots'] = $remainingJuz - count($names);
   $response['status'] = 2;
   return $response;
 }

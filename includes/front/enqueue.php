@@ -23,12 +23,12 @@ function kh_enqueue_scripts () {
     null
   );
 
-  wp_register_style(
-    'kh_material_symbols', 
-    "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200",
-    [],
-    null
-  );
+  // wp_register_style(
+  //   'kh_material_symbols', 
+  //   "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200",
+  //   [],
+  //   null
+  // );
 
   // wp_register_script(
   //   'kh_material_script',
@@ -41,7 +41,7 @@ function kh_enqueue_scripts () {
   wp_enqueue_style('kh_fonts');
   // wp_enqueue_style('kh_material_components');
   wp_enqueue_script('kh_material_icons');
-  wp_enqueue_script('kh_material_symbols');
+  // wp_enqueue_script('kh_material_symbols');
   // wp_enqueue_script('kh_material_script');
 
 
