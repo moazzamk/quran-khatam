@@ -15,28 +15,30 @@ import {
 	TextField,
 } from '@mui/material';
 
-import { grey, red } from '@mui/material/colors';
+import { grey } from '@mui/material/colors';
 import { Stack } from '@mui/system';
 
 import icons from '../../../../icons';
+
+import SuccessTable from '../SucessTable/SuccessTable';
+
 
 export default function ReciteForm ({
   availableSpots,
   alertMsg,
   setAlertMsg, 
-  setDoAlertReset, 
+  setDoAlertReset,
+  setModalHTML,
   setShowModal, 
-  setAddedUsers,
   alertRef
 }) {
   const [ formType, setFormType ] = useState(0);
   const [ names, setNames ] = useState([]);
   const [ email, setEmail ] = useState('');
   const [ isFormValid, setIsFormValid ] = useState(true);
+  const [addedUsers, setAddedUsers] = useState([]);
 
   const [openSlots, setOpenSlots] = useState(availableSpots);
-
-  const [signupBtnChecked, setSignupBtnChecked] = useState(false);
 
   function throwNamesError (msg) {
     setIsFormValid(false);
@@ -56,6 +58,17 @@ export default function ReciteForm ({
       behavior: 'smooth',
     });
   }
+
+  // Radio buttons
+  const [signupBtnChecked, setSignupBtnChecked] = useState(false);
+  const [completedBtnChecked, setCompletedBtnChecked] = useState(false);
+  useEffect( () => {
+    if (+formType === 1) {
+      setCompletedBtnChecked(false);
+    } else if (+formType === 2) {
+      setSignupBtnChecked(false);
+    }
+  }, [formType]);
 
   // NAME(S) VALIDATION VARS
   const [ isKhatamFull, setIsKhatamFull ] = useState(false);
@@ -146,7 +159,7 @@ export default function ReciteForm ({
     console.log(isKhatamFull);
   }, [openSlots, isKhatamFull]);
 
-  useEffect(() => {}, [openSlots, isNamesError]);
+  useEffect(() => {}, [openSlots, isNamesError, addedUsers]);
 
   // EMAIL VALIDATION
   const [emailError, setEmailError] = useState(null);
@@ -237,6 +250,9 @@ export default function ReciteForm ({
           );
 
           setAddedUsers(data.results);
+          setModalHTML(
+            <SuccessTable users={addedUsers}/>
+          );
           setShowModal(true);
         }
       });
@@ -261,6 +277,10 @@ export default function ReciteForm ({
       if (data.status == 1) {
         setAlertMsg(data.msg);
       } else {
+        // console.log(data);
+        // setAddedUsers(data.results);
+        setShowModal(true);
+
         const userTableUpdated = new Event ('khatamUpdated');
         const khDataBlocks = document.querySelectorAll('.kh-users');
         
@@ -308,6 +328,8 @@ export default function ReciteForm ({
                   value={2}
                   control={<Radio size="small" />}
                   label="I completed recitation"
+                  checked={ completedBtnChecked }
+                  onChange={e => setCompletedBtnChecked(!!e.target.value)}
                 />
               </RadioGroup>
             </FormControl>

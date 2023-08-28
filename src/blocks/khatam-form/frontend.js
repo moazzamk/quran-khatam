@@ -4,7 +4,6 @@ import { Alert } from '@mui/material';
 
 import ModalAlert from './components/ModalALert/ModalALert';
 import ReciteForm from './components/ReciteForm/ReciteForm';
-import SuccessTable from './components/SucessTable/SuccessTable';
 
 const theme = createTheme({
   typography: {
@@ -31,8 +30,7 @@ function KhatamForm ({ availableSpots }) {
   const [doAlertReset, setDoAlertReset] = useState(true);
 
   const [showModal, setShowModal] = useState(false);
-  const [addedUsers, setAddedUsers] = useState([]);
-
+  const [modalHTML, setModalHTML] = useState(null);
   const alertRef = useRef();
 
   function resetAlert() {
@@ -59,6 +57,8 @@ function KhatamForm ({ availableSpots }) {
     }
   }, [doAlertReset])
 
+  useEffect(() => {}, modalHTML);
+
   return (
     <ThemeProvider theme={ theme }>
       <ModalAlert 
@@ -67,7 +67,7 @@ function KhatamForm ({ availableSpots }) {
         showModal={showModal}
         setShowModal= {setShowModal}
       >
-        <SuccessTable users={addedUsers}/>
+        { modalHTML }
       </ModalAlert>
 
       <Alert severity={alertSev} ref={alertRef} sx={{
@@ -79,8 +79,8 @@ function KhatamForm ({ availableSpots }) {
         alertMsg = {alertMsg}
         setAlertMsg={setAlertMsg}
         setDoAlertReset={setDoAlertReset}
+        setModalHTML={setModalHTML}
         setShowModal={setShowModal}
-        setAddedUsers={setAddedUsers}
         alertRef={alertRef}
       />
     </ThemeProvider>
