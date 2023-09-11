@@ -30,15 +30,18 @@ function KhatamTable () {
     });
 
     res.json().then(data => {
-      let shapedArr = data.data.map(u => {
-        u.status = u.status.includes('0') ? 'in progress' : 'completed';
-        return u;
-      });
-
-      for (let i = (30 - (30 - data.data.length) + 1); i <= 30; i++) {
-        shapedArr.push({email: null, status: null, juz: i, firstName: null, lastName: null})
+      console.log(data);
+      if (+data.status === 2) {
+        let shapedArr = data.data.map(u => {
+          u.status = u.status.includes('0') ? 'in progress' : 'completed';
+          return u;
+        });
+  
+        for (let i = (30 - (30 - data.data.length) + 1); i <= 30; i++) {
+          shapedArr.push({email: null, status: null, juz: i, firstName: null, lastName: null})
+        }
+        setKhatamUsers(shapedArr);
       }
-      setKhatamUsers(shapedArr);
     });
   }
 

@@ -6,6 +6,7 @@ function kh_activate_plugin () {
 
 function createTables () {
   require_once(ABSPATH . "/wp-admin/includes/upgrade.php");
+  // require_once(__DIR__ . "/../../../../wp-admin/includes/upgrade.php");
   global $wpdb;
   $charsetCollate = $wpdb->get_charset_collate();
 

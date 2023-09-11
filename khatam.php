@@ -6,7 +6,7 @@
 * Version:           1.0.0
 * Requires at least: 5.9
 * Requires PHP:      7.2
-* Author:            Moazzam Khan & Hasham Khan
+* Author:            Quaid, Moazzam Khan, & Hasham Khan
 * Author URI:        https://author.example.com/
 * License:           GPL v2 or later
 * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
@@ -39,3 +39,6 @@ add_action('rest_api_init', 'kh_rest_api_init');
 add_action('wp_enqueue_scripts', 'kh_enqueue_scripts', 5);
 add_action('admin_enqueue_scripts', 'kh_enqueue_scripts', 5);
 // add_action('wp_head', 'kh_head', 5);
+
+// Shortcode
+add_shortcode( 'kh-form', 'kh_form_shortcode' );

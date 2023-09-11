@@ -31,6 +31,7 @@ function KhatamForm ({ availableSpots }) {
 
   const [showModal, setShowModal] = useState(false);
   const [modalHTML, setModalHTML] = useState(null);
+  const [modalTitle, setModalTitle] = useState('');
   const alertRef = useRef();
 
   function resetAlert() {
@@ -62,7 +63,8 @@ function KhatamForm ({ availableSpots }) {
   return (
     <ThemeProvider theme={ theme }>
       <ModalAlert 
-        msg="The following users were successfully added to current khatam"
+        // msg="The following users were successfully added to current khatam"
+        msg={ modalTitle }
         severity="success"
         showModal={showModal}
         setShowModal= {setShowModal}
@@ -82,6 +84,7 @@ function KhatamForm ({ availableSpots }) {
         setModalHTML={setModalHTML}
         setShowModal={setShowModal}
         alertRef={alertRef}
+        setModalTitle = {setModalTitle}
       />
     </ThemeProvider>
   );
