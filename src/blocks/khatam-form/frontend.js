@@ -63,7 +63,7 @@ function KhatamForm ({ availableSpots }) {
   return (
     <ThemeProvider theme={ theme }>
       <ModalAlert 
-        // msg="The following users were successfully added to current khatam"
+        // msg="The following users were successfully added to current khatm"
         msg={ modalTitle }
         severity="success"
         showModal={showModal}
