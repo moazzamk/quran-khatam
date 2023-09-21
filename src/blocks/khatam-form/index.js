@@ -29,7 +29,7 @@ registerBlockType(block.name, {
     
     return (<>
 			<section id="kh-editor-form">
-				<h2>Khatam Recitation Form</h2>
+				<h2>Khatm Recitation Form</h2>
 			</section>
 			
     </>);
