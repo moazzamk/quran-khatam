@@ -30,7 +30,6 @@ function KhatamTable () {
     });
 
     res.json().then(data => {
-      console.log(data);
       if (+data.status === 2) {
         let shapedArr = data.data.map(u => {
           u.status = u.status.includes('0') ? 'in progress' : 'completed';

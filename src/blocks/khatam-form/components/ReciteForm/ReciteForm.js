@@ -9,13 +9,14 @@ import {
 	Typography,
 	FormControl,
 	FormLabel,
+  FormHelperText,
 	FormControlLabel,
 	RadioGroup,
 	Radio,
 	TextField,
 } from '@mui/material';
 
-import { grey } from '@mui/material/colors';
+import { grey, red } from '@mui/material/colors';
 import { Stack } from '@mui/system';
 
 import icons from '../../../../icons';
@@ -28,10 +29,8 @@ export default function ReciteForm ({
   alertMsg,
   setAlertMsg, 
   setDoAlertReset,
-  setModalHTML,
-  setShowModal, 
+  modalArr,
   alertRef,
-  setModalTitle
 }) {
   // const [namesArr, setNamesArr] = useState([]);
   const khFormDefaultState = {
@@ -40,20 +39,27 @@ export default function ReciteForm ({
         enabled: true,
         label: 'I want to recite',
         selected: false,
+        value: 'recite',
+        isChecked: null,
       },
       completed: {
         enabled: true,
         label: 'I completed recitation',
         selected: false,
+        value: 'completed',
+        isChecked: null,
       },
-      radioSelected: null
+      radioSelected: null,
+      prevRadioSelected: null,
+      isValid: true,
+      helperText: ''
     },
     names: {
       value: '',
       isValid: true,
       helperTextError: '',
       helperTextDefault: 'Names must be comma separated',
-      label: 'names(s)',
+      label: 'Name(s)',
     },
     email: {
       value: '',
@@ -66,6 +72,7 @@ export default function ReciteForm ({
     isKhatamFull: availableSpots <= 0,
   };
   const [khForm, setKhForm] = useState(khFormDefaultState);
+  const[modal, setModal] = modalArr;
 
 
   function showError (msg) {
@@ -121,6 +128,27 @@ export default function ReciteForm ({
       })
     }
 
+    if (
+      khForm.isKhatamFull && 
+      khForm.formTypeRadioGroup.recite.label === khFormDefaultState.formTypeRadioGroup.recite.label
+    ) {
+      setKhForm({...khForm,
+        formTypeRadioGroup:{...khForm.formTypeRadioGroup,
+          recite: {...khForm.formTypeRadioGroup.recite,
+            label: <Typography sx={{color: grey[400]}}>Current khatam is full</Typography>,
+          },
+          radioSelected: khForm.formTypeRadioGroup.completed.value,
+        }
+      })
+    }
+
+    // if (khForm.formTypeRadioGroup.radioSelected != khForm.formTypeRadioGroup.prevRadioSelected) {
+    //   setKhForm({...khForm,
+    //     formTypeRadioGroup: {...khForm.formTypeRadioGroup,
+    //       prevRadioSelected: khForm.formTypeRadioGroup.radioSelected,
+    //     }
+    //   });
+    // }
     console.log(khForm);
   }, [khForm]);
 
@@ -176,12 +204,16 @@ export default function ReciteForm ({
       if (khForm.formTypeRadioGroup.radioSelected === 'recite') {
         if (namesArr.length > khForm.openSlots) {
           let noOfUsersToRemove = namesArr.length - khForm.openSlots;
-          showError(`
-            There ${khForm.openSlots > 1 ? 'are' : 'is'} only ${khForm.openSlots} open spot${khForm.openSlots > 1 ? 's' : ''} in current khatam. 
-            Please remove ${noOfUsersToRemove} name${noOfUsersToRemove > 1 ? 's': ''} and try again.
-          `);
           setKhForm({...khForm,
             isValid: false,
+            names: {
+              ...khForm.names,
+              isValid: false,
+              helperTextError: `
+              There ${khForm.openSlots > 1 ? 'are' : 'is'} only ${khForm.openSlots} open spot${khForm.openSlots > 1 ? 's' : ''} in current khatam. 
+              Please remove ${noOfUsersToRemove} name${noOfUsersToRemove > 1 ? 's': ''} and try again.
+            `
+            }
           });
           return;
         } else {
@@ -227,12 +259,29 @@ export default function ReciteForm ({
     }
   }
 
+  function handleFormTypeChange (e) {
+    let selectedValue = khForm.isKhatamFull ? 
+      khForm.formTypeRadioGroup.completed.value : e.target.value;
+
+    setKhForm({
+      ...khForm,
+      formTypeRadioGroup: { 
+        ...khForm.formTypeRadioGroup, 
+        radioSelected: selectedValue
+      }
+    })
+  }
+
   async function handleKhatamFormSubmit (e) {
     e.preventDefault();
     const formData = {
       names: getNamesArray(),
       email: khForm.email.value,
     };
+
+    // if (!khForm.isValid) {
+    //   return;
+    // }
 
     if (
       khForm.names.isValid && 
@@ -246,27 +295,25 @@ export default function ReciteForm ({
 
     if (khForm.formTypeRadioGroup.radioSelected == 'recite') {
       if (khForm.isKhatamFull) {
-        showError('Current Khatam is full!');
-        return;
-      }
-
-      if (formData.names.length > khForm.openSlots) {
-        let noOfUsersToRemove = formData.names.length - khForm.openSlots;
-        showError(`
-          There ${khForm.openSlots > 1 ? 'are' : 'is'} only ${khForm.openSlots} open spot${khForm.openSlots > 1 ? 's' : ''} in current khatam. 
-          Please remove ${noOfUsersToRemove} name${noOfUsersToRemove > 1 ? 's': ''} and try again.
-        `);
+        setModalTitle('Current khatam is full!');
+        setModalHTML(
+          <Typography>Unable to add users to current kharam as it is full!</Typography>
+        );
+        setShowModal(true);
         return;
       }
 
       await handleSignup(formData);
     } else if (khForm.formTypeRadioGroup.radioSelected == 'completed') {
-      console.log('1 run!');
       await handleJuzCompleted(formData);
     } else {
-      showError('Please select the appropriate option');
+      setKhForm({...khForm, 
+        formTypeRadioGroup: {...khForm.formTypeRadioGroup,
+          isValid: false,
+          helperText: "Please select an appropriate option",
+        }
+      })
     }
-    
   }
 
   async function handleSignup (formData) {
@@ -284,20 +331,19 @@ export default function ReciteForm ({
         )
       ).json().then(data => {
         if (data.status == 1) {
-          setAlertMsg(data.msg);
+          setModal({...modal,
+            showModal: true,
+            severity: 'warning',
+            modalTitle: 'Error',
+            modalText: data.msg,
+            children: null,
+          });
         } else {
           let isKhatamFull = data.openSlots <= 0;
 
           setKhForm({...khFormDefaultState,
             openSlots: data.openSlots,
             isKhatamFull: isKhatamFull,
-            formTypeRadioGroup: {...khForm.formTypeRadioGroup,
-              recite: {...khForm.formTypeRadioGroup.recite,
-                label: isKhatamFull ? 
-                <Typography sx={{color: grey[400]}}>Current khatam is full</Typography> :
-                khFormDefaultState.formTypeRadioGroup.recite.label,
-              }
-            },
           });
 
           const userTableUpdated = new Event ('khatamUpdated');
@@ -307,15 +353,23 @@ export default function ReciteForm ({
             block.dispatchEvent(userTableUpdated)
           );
 
-          setModalTitle('The following users were successfully added to current khatam');
-          setModalHTML(
-            <SuccessTable users={data.results}/>
-          );
-          setShowModal(true);
+          setModal({...modal,
+            showModal: true,
+            severity: 'success',
+            modalTitle: 'Success',
+            modalText: "The following users were successfully added to current khatam:",
+            children: [<SuccessTable users={data.results}/>],
+          });
         }
       });
     } else {
-      showError('Please fix the errors and try again!');
+      setModal({...modal,
+        showModal: true,
+        severity: 'warning',
+        modalTitle: 'Error',
+        modalText: "Please fix the errors and try again!",
+        children: [],
+      });
     }
   }
 
@@ -333,10 +387,21 @@ export default function ReciteForm ({
       )
     ).json().then(data => {
       if (data.status == 1) {
-        setAlertMsg(data.msg);
+        setModal({...modal,
+          showModal: true,
+          severity: 'warning',
+          modalTitle: 'Error',
+          modalText: data.msg,
+          children: null,
+        })
       } else {
-        setModalTitle('The user(s) were successfully updated');
-        setShowModal(true);
+        setModal({...modal,
+          showModal: true,
+          severity: 'success',
+          modalTitle: 'Success',
+          modalText: "The user(s) were successfully updated",
+          children: null,
+        });
 
         const userTableUpdated = new Event ('khatamUpdated');
         const khDataBlocks = document.querySelectorAll('.kh-users');
@@ -360,7 +425,7 @@ export default function ReciteForm ({
         <CardContent sx={{ paddingLeft: "2rem"}}>
           <Stack spacing={2}>
             <FormControl>
-              <FormLabel id="kh-form-type" required>
+              <FormLabel id="kh-form-type" error={ !khForm.formTypeRadioGroup.isValid } required>
                 <Typography variant="body2" component="span">
                   Please Select One
                 </Typography>
@@ -369,26 +434,32 @@ export default function ReciteForm ({
                 aria-labelledby='kh-form-type'
                 name="khFormType"
                 value={ khForm.radioSelected }
-                onChange={e => setKhForm({
-                  ...khForm,
-                  formTypeRadioGroup: { 
-                    ...khForm.formTypeRadioGroup, 
-                    radioSelected: e.target.value
-                  }
-                })}
+                onChange={ e => {
+                  setKhForm({...khForm,
+                    formTypeRadioGroup: {...khForm.formTypeRadioGroup,
+                      isValid: true,
+                      helperText: '',
+                      radioSelected: e.target.value,
+                      prevRadioSelected: khForm.formTypeRadioGroup.radioSelected,
+                    }
+                  });
+                }}
               >
                 <FormControlLabel
-                  value={'recite'}
+                  value={khForm.formTypeRadioGroup.recite.value}
                   control={<Radio size="small" />}
                   label={ khForm.formTypeRadioGroup.recite.label }
                   disabled={ khForm.isKhatamFull }
                 />
                 <FormControlLabel
-                  value={'completed'}
+                  value={khForm.formTypeRadioGroup.completed.value}
                   control={<Radio size="small" />}
                   label={ khForm.formTypeRadioGroup.completed.label }
                 />
               </RadioGroup>
+              <FormHelperText error={ !khForm.formTypeRadioGroup.isValid }>
+                { khForm.formTypeRadioGroup.helperText }
+              </FormHelperText>
             </FormControl>
             <FormControl>
               <TextField 
