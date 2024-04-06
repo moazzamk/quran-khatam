@@ -59,3 +59,24 @@ function KhatamUsersInsert($firstname, $lastname, $email) : int | false {
   );
   return $rs;
 }
+
+function KhatamUsersGetUser(
+  string $email, string $firstname, string $lastname, int $khatamId
+): array|object|null|string {
+  global $wpdb;
+  $sql = <<<SQL
+    SELECT * FROM {$wpdb->prefix}khatams_users WHERE (
+        khatam_id={$khatamId} AND
+        user_email="{$email}" AND
+        first_name="{$firstname}" AND
+        last_name="{$lastname}"
+    );
+  SQL;
+
+  // return $sql;
+  $rs = $wpdb->get_row(
+    $sql
+  );
+
+  return $rs;
+}
