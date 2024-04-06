@@ -1,2 +1,2 @@
 # khatam
- Quran Khatam plugin for Quran recitations
+ Quran Khatm plugin for Quran recitations

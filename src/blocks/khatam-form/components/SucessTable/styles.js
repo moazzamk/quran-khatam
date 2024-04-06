@@ -1,4 +1,4 @@
-import { green, grey } from '@mui/material/colors';
+import { green, grey } from '@mui/material/colors/index.js';
 
 export default {
   background: grey[50],

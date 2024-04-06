@@ -4,7 +4,9 @@ import {
 } from '@mui/material';
 import { DataGrid, GridToolbarQuickFilter, gridClasses } from '@mui/x-data-grid';
 import { orange, green, grey } from '@mui/material/colors';
+
 import { ThemeProvider, createTheme } from '@mui/material/styles'; 
+import CircularProgress from '@mui/material/CircularProgress';
 import UnfoldMoreIcon from "@mui/icons-material/UnfoldMore";
 
 import styles from './main.css';
@@ -23,8 +25,10 @@ function UnsortedIcon () {
 
 function KhatamTable () {
   const [khatamUsers, setKhatamUsers] = useState([]);
+  const [isDataAvailable, setIsDataAvailable] = useState(false);
 
   async function getKhatamUsers () {
+    setIsDataAvailable(false);
     const res = await fetch(kh_auth_rest.currentKhatam, {
       method: 'GET',
     });
@@ -41,6 +45,7 @@ function KhatamTable () {
         }
         setKhatamUsers(shapedArr);
       }
+      setIsDataAvailable(true);
     });
   }
 
@@ -55,6 +60,8 @@ function KhatamTable () {
     },
     []
   );
+
+  useEffect(() => {}, [isDataAvailable]);
 
   const columns = [
     {
@@ -114,64 +121,74 @@ function KhatamTable () {
     <ThemeProvider theme={ theme }>
       <Paper
         elevation={2}
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center"
+        }}
       >
-      <DataGrid
-        rows={khatamUsers}
-        columns={columns}
-        initialState={{
-          pagination: {
-            paginationModel: {
-              pageSize: 30,
+
+      {
+        !isDataAvailable ?
+        <CircularProgress sx={{ padding: "24px", }} /> :
+        <DataGrid
+          rows={khatamUsers}
+          columns={columns}
+          initialState={{
+            pagination: {
+              paginationModel: {
+                pageSize: 30,
+              },
             },
-          },
-          filter: {
-            khatamUsers,
-            filterModel: {
-              items: [],
-              quickFilterValues: [],
+            filter: {
+              khatamUsers,
+              filterModel: {
+                items: [],
+                quickFilterValues: [],
+              },
             },
-          },
-        }}
-        disableColumnFilter
-        disableColumnSelector
-        disableDensitySelector
-        slots={{ 
-          toolbar: QuickSearchToolbar,
-          columnUnsortedIcon: UnsortedIcon,        
-        }}
-        slotProps={{
-          toolbar: {
-            showQuickFilter: true,
-          },
-        }}
-        pageSizeOptions={[30]}
-        getRowId={(row) => +row.juz}
-        autoHeight
-        sx={{ 
-          background: grey[50],
-          textTransform: 'capitalize',
-          [`& .${gridClasses.row}.even`]: {
-            background: grey[100],
-          },
-          '& .MuiDataGrid-columnHeaders': {
-            background: grey['300'],
-            borderRadius: 0,
-            '& div': {
-              fontWeight: '700',
-            }
-          },
-          '.MuiDataGrid-iconButtonContainer': {
-            visibility: 'visible',
-          },
-          '.MuiDataGrid-sortIcon': {
-            opacity: 'inherit !important',
-          },
-        }}
-        getRowClassName={(params) =>
-          params.indexRelativeToCurrentPage % 2 === 0 ? 'even' : 'odd'
-        }
-        disableColumnMenu
-      />
+          }}
+          disableColumnFilter
+          disableColumnSelector
+          disableDensitySelector
+          slots={{ 
+            toolbar: QuickSearchToolbar,
+            columnUnsortedIcon: UnsortedIcon,        
+          }}
+          slotProps={{
+            toolbar: {
+              showQuickFilter: true,
+            },
+          }}
+          pageSizeOptions={[30]}
+          getRowId={(row) => +row.juz}
+          autoHeight
+          sx={{ 
+            background: grey[50],
+            textTransform: 'capitalize',
+            [`& .${gridClasses.row}.even`]: {
+              background: grey[100],
+            },
+            '& .MuiDataGrid-columnHeaders': {
+              background: grey['300'],
+              borderRadius: 0,
+              '& div': {
+                fontWeight: '700',
+              }
+            },
+            '.MuiDataGrid-iconButtonContainer': {
+              visibility: 'visible',
+            },
+            '.MuiDataGrid-sortIcon': {
+              opacity: 'inherit !important',
+            },
+          }}
+          getRowClassName={(params) =>
+            params.indexRelativeToCurrentPage % 2 === 0 ? 'even' : 'odd'
+          }
+          disableColumnMenu
+        />
+      }
       </Paper>
     </ThemeProvider>
   );

@@ -19,5 +19,47 @@
 /***************************/
 /* FRONTEND & FSE SETTINGS */
 /***************************/
+#kh-form-container {
+  font-size: 16px;
+  margin-bottom: 16px;
+}
+#kh-form-container .form-group {
+  margin: 0;
+  padding-bottom: 0;
+}
+
+#kh-form-container .MuiInputBase-root {
+  margin: 16px 0 0 0;
+  padding: 0;
+}
+
+#kh-form-container .MuiInputBase-input {
+  font-size: 16px;
+  margin: 0;
+}
+
+#kh-form-container .MuiButtonBase-root {
+  box-shadow: none;
+}
+
+#kh-form-container .MuiTypography-root {
+  margin: 0;
+}
+
+#kh-form-container .MuiTypography-root.MuiTypography-h5 {
+  font-size: 24px;
+}
+#kh-form-container .MuiTypography-root.MuiTypography-body2,
+#kh-form-container .MuiTypography-root.MuiTypography-subtitle2 {
+  font-size: 14px;
+}
+
+#kh-form-container .MuiFormHelperText-root.MuiFormHelperText-sizeMedium {
+  font-size: 12px;
+}
+
+#kh-form-container .MuiSvgIcon-root {
+  font-size: 20px;
+}
 
 /* TESTING */
