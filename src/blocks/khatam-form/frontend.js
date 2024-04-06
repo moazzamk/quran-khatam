@@ -83,7 +83,6 @@ function KhatamForm ({ availableSpots }) {
   return (
     <ThemeProvider theme={ theme }>
       <ModalAlert modalArr={[modal, setModal]} />
-
       <Alert severity={alertSev} ref={alertRef} sx={{
         marginBottom: 2,
       }} >{ alertMsg }</Alert>

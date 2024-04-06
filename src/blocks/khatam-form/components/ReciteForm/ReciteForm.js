@@ -14,6 +14,7 @@ import {
 	RadioGroup,
 	Radio,
 	TextField,
+  CircularProgress
 } from '@mui/material';
 
 import { grey, red } from '@mui/material/colors';
@@ -73,6 +74,7 @@ export default function ReciteForm ({
   };
   const [khForm, setKhForm] = useState(khFormDefaultState);
   const[modal, setModal] = modalArr;
+  const [isFormProcessing, setIsFormProcessing] = useState(false);
 
 
   function showError (msg) {
@@ -151,6 +153,10 @@ export default function ReciteForm ({
     // }
     console.log(khForm);
   }, [khForm]);
+
+  useEffect(() => {
+
+  }, [isFormProcessing]);
 
   function validateNames () {
     if (khForm.names.value == null || khForm.names.value === '') {
@@ -303,8 +309,10 @@ export default function ReciteForm ({
         return;
       }
 
+      setIsFormProcessing(true);
       await handleSignup(formData);
     } else if (khForm.formTypeRadioGroup.radioSelected == 'completed') {
+      setIsFormProcessing(true);
       await handleJuzCompleted(formData);
     } else {
       setKhForm({...khForm, 
@@ -338,8 +346,11 @@ export default function ReciteForm ({
             modalText: data.msg,
             children: null,
           });
+          setIsFormProcessing(false);
         } else {
           let isKhatamFull = data.openSlots <= 0;
+
+          setIsFormProcessing(false);
 
           setKhForm({...khFormDefaultState,
             openSlots: data.openSlots,
@@ -370,6 +381,7 @@ export default function ReciteForm ({
         modalText: "Please fix the errors and try again!",
         children: [],
       });
+      setIsFormProcessing(false);
     }
   }
 
@@ -402,14 +414,14 @@ export default function ReciteForm ({
           modalText: "The user(s) were successfully updated",
           children: null,
         });
-
-        const userTableUpdated = new Event ('khatamUpdated');
-        const khDataBlocks = document.querySelectorAll('.kh-users');
-
-        khDataBlocks.forEach(block => 
-          block.dispatchEvent(userTableUpdated)
-        );
       }
+      
+      const userTableUpdated = new Event ('khatamUpdated');
+      const khDataBlocks = document.querySelectorAll('.kh-users');
+      khDataBlocks.forEach(block => 
+        block.dispatchEvent(userTableUpdated)
+      );
+      setIsFormProcessing(false);
     });
   }
 
@@ -421,99 +433,116 @@ export default function ReciteForm ({
         color="secondary"
       />
       <Divider variant="middle" />
-      <form onSubmit={handleKhatamFormSubmit}>
-        <CardContent sx={{ paddingLeft: "2rem"}}>
-          <Stack spacing={2}>
-            <FormControl>
-              <FormLabel id="kh-form-type" error={ !khForm.formTypeRadioGroup.isValid } required>
-                <Typography variant="body2" component="span">
-                  Please Select One
-                </Typography>
-              </FormLabel>
-              <RadioGroup
-                aria-labelledby='kh-form-type'
-                name="khFormType"
-                value={ khForm.radioSelected }
-                onChange={ e => {
-                  setKhForm({...khForm,
-                    formTypeRadioGroup: {...khForm.formTypeRadioGroup,
-                      isValid: true,
-                      helperText: '',
-                      radioSelected: e.target.value,
-                      prevRadioSelected: khForm.formTypeRadioGroup.radioSelected,
-                    }
-                  });
-                }}
-              >
-                <FormControlLabel
-                  value={khForm.formTypeRadioGroup.recite.value}
-                  control={<Radio size="small" />}
-                  label={ khForm.formTypeRadioGroup.recite.label }
-                  disabled={ khForm.isKhatamFull }
-                />
-                <FormControlLabel
-                  value={khForm.formTypeRadioGroup.completed.value}
-                  control={<Radio size="small" />}
-                  label={ khForm.formTypeRadioGroup.completed.label }
-                />
-              </RadioGroup>
-              <FormHelperText error={ !khForm.formTypeRadioGroup.isValid }>
-                { khForm.formTypeRadioGroup.helperText }
-              </FormHelperText>
-            </FormControl>
-            <FormControl>
-              <TextField 
-                id="khName" 
-                value={ khForm.names.value }
-                label={ khForm.names.label }
-                helperText={ khForm.names.isValid ? 
-                  khForm.names.helperTextDefault :
-                  khForm.names.helperTextError
-                }
-                error={ !khForm.names.isValid }
-                required
-                variant="standard" 
-                onChange={e => setKhForm({...khForm,
-                  names: { ...khForm.names, value: e.target.value }
-                })}
-                onBlur={ validateNames }
-              />
-            </FormControl>
-            <FormControl>
-              <TextField 
-                id="khEmail" 
-                label="Email" 
-                variant="standard" 
-                required
-                value={ khForm.email.value }
-                onChange={e => setKhForm({...khForm, 
-                  email: { ...khForm.email, 
-                    value: e.target.value
+      <div style={{
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center'
+      }}>
+      {
+        isFormProcessing ? 
+        <CircularProgress sx={{
+          padding: '24px',
+        }} /> :
+        
+        <form 
+          style={{
+            width: '100%',
+          }}
+          onSubmit={handleKhatamFormSubmit}>
+          <CardContent sx={{ paddingLeft: "2rem"}}>
+            <Stack spacing={2}>
+              <FormControl>
+                <FormLabel id="kh-form-type" error={ !khForm.formTypeRadioGroup.isValid } required>
+                  <Typography variant="body2" component="span">
+                    Please Select One
+                  </Typography>
+                </FormLabel>
+                <RadioGroup
+                  aria-labelledby='kh-form-type'
+                  name="khFormType"
+                  value={ khForm.radioSelected }
+                  onChange={ e => {
+                    setKhForm({...khForm,
+                      formTypeRadioGroup: {...khForm.formTypeRadioGroup,
+                        isValid: true,
+                        helperText: '',
+                        radioSelected: e.target.value,
+                        prevRadioSelected: khForm.formTypeRadioGroup.radioSelected,
+                      }
+                    });
+                  }}
+                >
+                  <FormControlLabel
+                    value={khForm.formTypeRadioGroup.recite.value}
+                    control={<Radio size="small" />}
+                    label={ khForm.formTypeRadioGroup.recite.label }
+                    disabled={ khForm.isKhatamFull }
+                  />
+                  <FormControlLabel
+                    value={khForm.formTypeRadioGroup.completed.value}
+                    control={<Radio size="small" />}
+                    label={ khForm.formTypeRadioGroup.completed.label }
+                  />
+                </RadioGroup>
+                <FormHelperText error={ !khForm.formTypeRadioGroup.isValid }>
+                  { khForm.formTypeRadioGroup.helperText }
+                </FormHelperText>
+              </FormControl>
+              <FormControl>
+                <TextField 
+                  id="khName" 
+                  value={ khForm.names.value }
+                  label={ khForm.names.label }
+                  helperText={ khForm.names.isValid ? 
+                    khForm.names.helperTextDefault :
+                    khForm.names.helperTextError
                   }
-                })}
-                onBlur={validateEmail}
-                helperText={ khForm.email.isValid ? 
-                  khForm.email.helperTextDefault :
-                  khForm.email.helperTextError
-                }
-                error={ !khForm.email.isValid }
-              />
-            </FormControl>
-          </Stack>
+                  error={ !khForm.names.isValid }
+                  required
+                  variant="standard" 
+                  onChange={e => setKhForm({...khForm,
+                    names: { ...khForm.names, value: e.target.value }
+                  })}
+                  onBlur={ validateNames }
+                />
+              </FormControl>
+              <FormControl>
+                <TextField 
+                  id="khEmail" 
+                  label="Email" 
+                  variant="standard" 
+                  required
+                  value={ khForm.email.value }
+                  onChange={e => setKhForm({...khForm, 
+                    email: { ...khForm.email, 
+                      value: e.target.value
+                    }
+                  })}
+                  onBlur={validateEmail}
+                  helperText={ khForm.email.isValid ? 
+                    khForm.email.helperTextDefault :
+                    khForm.email.helperTextError
+                  }
+                  error={ !khForm.email.isValid }
+                />
+              </FormControl>
+            </Stack>
 
-        </CardContent>
-        <CardActions sx={{justifyContent: "flex-end"}}>
-          <Button variant="standard" type='submit'>
-            <Typography 
-              variant="subtitle2" 
-              color="secondary" 
-              sx={{ fontWeight: 700 }}
-            >
-              Submit
-            </Typography>
-          </Button>
-        </CardActions>
-      </form>
+          </CardContent>
+          <CardActions sx={{justifyContent: "flex-end"}}>
+            <Button variant="standard" type='submit'>
+              <Typography 
+                variant="subtitle2" 
+                color="secondary" 
+                sx={{ fontWeight: 700 }}
+              >
+                Submit
+              </Typography>
+            </Button>
+          </CardActions>
+        </form>
+      }
+      </div>
     </Card>
   );
 }

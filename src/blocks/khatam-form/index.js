@@ -10,9 +10,7 @@ import block from './block.json';
 import icons from '../../icons';
 import './main.css';
 
-import { ThemeProvider, createTheme } from '@mui/material/styles'; 
-import { grey, red } from '@mui/material/colors';
-import { Stack } from '@mui/system';
+import { createTheme } from '@mui/material/styles'; 
 
 const theme = createTheme({
   typography: {
@@ -29,7 +27,7 @@ registerBlockType(block.name, {
     
     return (<>
 			<section id="kh-editor-form">
-				<h2>Khatam Recitation Form</h2>
+				<h2>Khatm Recitation Form</h2>
 			</section>
 			
     </>);
