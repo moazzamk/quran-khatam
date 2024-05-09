@@ -1,8 +1,8 @@
 <?php
 
 function kh_rest_api_current_khatam_complete_juz_handler ($request) {
-  require_once(ABSPATH . "/wp-content/plugins/khatam/repositories/khatamUsersRepository.php");
-  require_once(ABSPATH . "/wp-content/plugins/khatam/repositories/khatamRepository.php");
+  require_once(__DIR__ . "/../../repositories/khatamUsersRepository.php");
+  require_once(__DIR__ . "/../../repositories/khatamRepository.php");
   $currentKhatam = getCurrentKhatam();
   $users = getKhatamUserList($currentKhatam->id);
   $results = [];
@@ -33,14 +33,32 @@ function kh_rest_api_current_khatam_complete_juz_handler ($request) {
   }
 
   foreach($names as $name) {
-    $isSuccess = khatamsUsersUpdateStatus(
-      $email, $name['firstName'], $name['lastName'], $currentKhatam->id, 1
+    $user = KhatamUsersGetUser(
+      $email, $name['firstName'], $name['lastName'], $currentKhatam->id
     );
 
-    if (!$isSuccess) {
+    // $response['msg'] = $user;
+    // return $response;
+
+    if (is_null($user)) {
       $response['msg'] = 'User not found.';
       return $response;
     }
+
+    if ($user->status == 1) {
+      $response['msg'] = 'One or more of users have already completed their Juz.';
+      return $response;
+    } else {
+      $isSuccess = khatamsUsersUpdateStatus(
+        $email, $name['firstName'], $name['lastName'], $currentKhatam->id, 1
+      );
+  
+      if (!$isSuccess) {
+        $response['msg'] = 'Unknown error.';
+        return $response;
+      }
+    }
+
   }
 
   $response['status'] = 2;

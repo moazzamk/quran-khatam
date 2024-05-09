@@ -21,5 +21,44 @@
 /***************************/
 /* FRONTEND & FSE SETTINGS */
 /***************************/
+#kh-table-container {
+  margin-bottom: 16px;
+}
+
+#kh-table-container .MuiInputBase-root .MuiSvgIcon-root {
+  font-size: 20px;
+}
+
+#kh-table-container .MuiInputBase-root {
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+#kh-table-container .form-control:focus,
+#kh-table-container .MuiIconButton-root {
+  box-shadow: none;
+}
+
+#kh-table-container .MuiInputBase-input {
+  box-sizing: content-box;
+  font-size: 16px;
+  background-image: none;
+  margin-bottom: 0;
+}
+
+#kh-table-container .MuiDataGrid-columnHeaderTitle,
+#kh-table-container .MuiDataGrid-overlay,
+#kh-table-container .MuiTablePagination-displayedRows {
+  font-size: 14px;
+}
+
+#kh-table-container .MuiDataGrid-iconButtonContainer {
+  width: auto;
+}
+
+#kh-table-container .MuiDataGrid-iconButtonContainer .MuiButtonBase-root .MuiSvgIcon-root {
+  font-size: 24px;
+}
+
 
 /* TESTING */

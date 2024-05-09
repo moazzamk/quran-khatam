@@ -1,8 +1,9 @@
 import { render, useState, useEffect, useRef } from '@wordpress/element';
 import { ThemeProvider, createTheme } from '@mui/material/styles'; 
 import { Alert } from '@mui/material';
+import { green, red, orange } from '@mui/material/colors';
 
-import ModalAlert from './components/ModalALert/ModalALert';
+import ModalAlert from './components/ModalALert/ModalAlert';
 import ReciteForm from './components/ReciteForm/ReciteForm';
 
 const theme = createTheme({
@@ -29,8 +30,28 @@ function KhatamForm ({ availableSpots }) {
   const [ alertSev, setAlertSev ] = useState('');
   const [doAlertReset, setDoAlertReset] = useState(true);
 
-  const [showModal, setShowModal] = useState(false);
-  const [modalHTML, setModalHTML] = useState(null);
+  const [modal, setModal] = useState({
+    showModal: false,
+    modalTitle: '',
+    modalText: '',
+    severity: 'success',
+    modalStates: {
+      success: {
+        background: green['50'],
+        fontColor: green[800],
+      },
+      warning: {
+        background: orange['50'],
+        fontColor: orange[800],
+      },
+      error: {
+        background: red['50'],
+        fontColor: red[800],
+      },
+    },
+    children: [],
+  })
+
   const alertRef = useRef();
 
   function resetAlert() {
@@ -57,19 +78,11 @@ function KhatamForm ({ availableSpots }) {
     }
   }, [doAlertReset])
 
-  useEffect(() => {}, modalHTML);
+  useEffect(() => {}, modal);
 
   return (
     <ThemeProvider theme={ theme }>
-      <ModalAlert 
-        msg="The following users were successfully added to current khatam"
-        severity="success"
-        showModal={showModal}
-        setShowModal= {setShowModal}
-      >
-        { modalHTML }
-      </ModalAlert>
-
+      <ModalAlert modalArr={[modal, setModal]} />
       <Alert severity={alertSev} ref={alertRef} sx={{
         marginBottom: 2,
       }} >{ alertMsg }</Alert>
@@ -79,8 +92,7 @@ function KhatamForm ({ availableSpots }) {
         alertMsg = {alertMsg}
         setAlertMsg={setAlertMsg}
         setDoAlertReset={setDoAlertReset}
-        setModalHTML={setModalHTML}
-        setShowModal={setShowModal}
+        modalArr={[modal, setModal]}
         alertRef={alertRef}
       />
     </ThemeProvider>

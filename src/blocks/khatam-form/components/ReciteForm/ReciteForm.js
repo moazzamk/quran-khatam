@@ -9,13 +9,15 @@ import {
 	Typography,
 	FormControl,
 	FormLabel,
+  FormHelperText,
 	FormControlLabel,
 	RadioGroup,
 	Radio,
 	TextField,
+  CircularProgress
 } from '@mui/material';
 
-import { grey } from '@mui/material/colors';
+import { grey, red } from '@mui/material/colors';
 import { Stack } from '@mui/system';
 
 import icons from '../../../../icons';
@@ -28,28 +30,52 @@ export default function ReciteForm ({
   alertMsg,
   setAlertMsg, 
   setDoAlertReset,
-  setModalHTML,
-  setShowModal, 
-  alertRef
+  modalArr,
+  alertRef,
 }) {
-  const [ formType, setFormType ] = useState(0);
-  const [ names, setNames ] = useState([]);
-  const [ email, setEmail ] = useState('');
-  const [ isFormValid, setIsFormValid ] = useState(true);
-  const [addedUsers, setAddedUsers] = useState([]);
+  // const [namesArr, setNamesArr] = useState([]);
+  const khFormDefaultState = {
+    formTypeRadioGroup: {
+      recite: {
+        enabled: true,
+        label: 'I want to recite',
+        selected: false,
+        value: 'recite',
+        isChecked: null,
+      },
+      completed: {
+        enabled: true,
+        label: 'I completed recitation',
+        selected: false,
+        value: 'completed',
+        isChecked: null,
+      },
+      radioSelected: null,
+      prevRadioSelected: null,
+      isValid: true,
+      helperText: ''
+    },
+    names: {
+      value: '',
+      isValid: true,
+      helperTextError: '',
+      helperTextDefault: 'Names must be comma separated',
+      label: 'Name(s)',
+    },
+    email: {
+      value: '',
+      isValid: true,
+      helperTextError: '',
+      helperTextDefault: '',
+    },
+    isValid: false,
+    openSlots: availableSpots,
+    isKhatamFull: availableSpots <= 0,
+  };
+  const [khForm, setKhForm] = useState(khFormDefaultState);
+  const[modal, setModal] = modalArr;
+  const [isFormProcessing, setIsFormProcessing] = useState(false);
 
-  const [openSlots, setOpenSlots] = useState(availableSpots);
-
-  function throwNamesError (msg) {
-    setIsFormValid(false);
-    setIsNamesError(true);
-    setNamesError(msg);
-  }
-
-  function resetNamesError() {
-    setIsNamesError(false);
-    setNamesError('');
-  }
 
   function showError (msg) {
     setAlertMsg(msg);
@@ -59,172 +85,247 @@ export default function ReciteForm ({
     });
   }
 
-  // Radio buttons
-  const [signupBtnChecked, setSignupBtnChecked] = useState(false);
-  const [completedBtnChecked, setCompletedBtnChecked] = useState(false);
-  useEffect( () => {
-    if (+formType === 1) {
-      setCompletedBtnChecked(false);
-    } else if (+formType === 2) {
-      setSignupBtnChecked(false);
-    }
-  }, [formType]);
-
-  // NAME(S) VALIDATION VARS
-  const [ isKhatamFull, setIsKhatamFull ] = useState(false);
-  const [ isNamesError, setIsNamesError ] = useState(false);
-  const [ namesError, setNamesError ] = useState('');
-
-  // Validation - NAMES
-  function validateNames (e) {
-    e.preventDefault();
-
-    const namesStr = e.target.value;
-
-    if (
-      namesStr == null ||
-      namesStr == undefined ||
-      namesStr == ''
-    ) {
-      return resetNamesError();
-    }
-
-    // If names input does not contain any letters
-    const containsLetters = /[A-z]/g;
-    if (!containsLetters.test(namesStr)) {
-      e.target.value = '';
-    }
-
-    // Split names into an array, setNames and trigger the useEffect
-    setNames(
-      [...namesStr.trim()
-        .toLowerCase()
-        .replace(/(^[,\s]*)|([,\s]*$)/g, '')
-        .replace(/(,\s+)|(\s,)/g, ',')
-        .split(',')
-      ]
-    );
+  function getNamesArray () {
+    return khForm.names.value
+      .trim()
+      .toLowerCase()
+      .replace(/(^[,\s]*)|([,\s]*$)/g, '')
+      .replace(/(,\s+)|(\s,)/g, ',')
+      .split(',')
+      .filter(n => n)
+    ;
   }
 
-  // UseEffect for names validation
-  useEffect(()=>{
-    if (names.length <= 0) {
-      resetNamesError();
-      return;
-    }
-
-    // If names are missing a last name
-    if (!names?.every(name => name.includes(' '))) {
-      throwNamesError('All names MUST contain a last name.');
-      return;
-    }
-
-    // If names > 7
-    if (names.length > 7) {
-      throwNamesError('Cannot add more than 7 names');
-      return;
-    }
-
-    // aa aa, bb bb, cc cc, dd dd, ee ee, ff ff, gg gg, hh hh
-    // Name validations for signing up
-    if (+formType === 1) {
-      // If names > available slots
-      if (names.length > openSlots) {
-        let noOfUsersToRemove = names.length - openSlots;
-        showError(`
-          There ${openSlots > 1 ? 'are' : 'is'} only ${openSlots} open spot${openSlots > 1 ? 's' : ''} in current khatam. 
-          Please remove ${noOfUsersToRemove} name${noOfUsersToRemove > 1 ? 's': ''} and try again.
-        `);
-        setIsNamesError(true);
-        return;
-      } else {
-        setAlertMsg(null)
+  function resetNames () {
+    setKhForm({...khForm,
+      isValid: false,
+      names: { ...khForm.names,
+        value: '',
+        values: [],
+        isValid: true,
+        helperText: null
       }
-    // Name validations for completing juz
-    } else if (+formType === 1) {
-      // Do something ...
-    }
+    })
+  }
 
-    setIsFormValid(true);
-    resetNamesError();
-  }, [names, isFormValid, isNamesError, formType]);
+  function resetEmail () {
+    setKhForm({ ...khForm,
+      isValid: false,
+      email: { ...khForm.email,
+        isValid: true,
+        helperText: null
+      }
+    })
+  }
 
-  // SHOW ERROR ALERT -- IF CURRENT KHATAM IS FULL
   useEffect(() => {
-    setIsKhatamFull(+openSlots == 0 ? true : false);
-    if (isKhatamFull) {
-      setSignupBtnChecked(false);
-      showError('Current Khatam is full!');
+    if (
+      khForm.names.isValid && 
+      khForm.email.isValid && 
+      khForm.formTypeRadioGroup.radioSelected != null &&
+      khForm.isValid === false
+    ) {
+      setKhForm({...khForm,
+        isValid: true,
+      })
     }
-    console.log(isKhatamFull);
-  }, [openSlots, isKhatamFull]);
 
-  useEffect(() => {}, [openSlots, isNamesError, addedUsers]);
+    if (
+      khForm.isKhatamFull && 
+      khForm.formTypeRadioGroup.recite.label === khFormDefaultState.formTypeRadioGroup.recite.label
+    ) {
+      setKhForm({...khForm,
+        formTypeRadioGroup:{...khForm.formTypeRadioGroup,
+          recite: {...khForm.formTypeRadioGroup.recite,
+            label: <Typography sx={{color: grey[400]}}>Current khatam is full</Typography>,
+          },
+          radioSelected: khForm.formTypeRadioGroup.completed.value,
+        }
+      })
+    }
 
-  // EMAIL VALIDATION
-  const [emailError, setEmailError] = useState(null);
-  const [isEmailError, setIsEmailError] = useState(false)
-  function validateEmail(e) {
-    e.preventDefault();
-    const emailStr = e.target.value;
-    const isEmailValid = emailStr.match(
-      /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-    );
+    // if (khForm.formTypeRadioGroup.radioSelected != khForm.formTypeRadioGroup.prevRadioSelected) {
+    //   setKhForm({...khForm,
+    //     formTypeRadioGroup: {...khForm.formTypeRadioGroup,
+    //       prevRadioSelected: khForm.formTypeRadioGroup.radioSelected,
+    //     }
+    //   });
+    // }
+    console.log(khForm);
+  }, [khForm]);
 
-    if (!isEmailValid) {
-      setIsEmailError(true);
-      setEmailError("Enter a valid email address")
+  useEffect(() => {
+
+  }, [isFormProcessing]);
+
+  function validateNames () {
+    if (khForm.names.value == null || khForm.names.value === '') {
+      resetNames();
     } else {
-      setIsEmailError(false);
-      setEmailError(null);
+      // If names input does not contain any letters
+      const containsLetters = /[A-z]/g;
+      if (!containsLetters.test(khForm.names.value)) {
+        resetNames();
+      }
+
+      let namesArr = getNamesArray();
+
+      // aa aa, bb bb ,,,,,,,,,,  ccc ccc
+      if (namesArr?.some(name => name.includes(null))) {
+        setKhForm({...khForm,
+          isValid: false,
+          names: {
+            ...khForm.names,
+            isValid: false,
+            helperTextError: 'Invalid name(s)'
+          }
+        });
+        return;
+      }
+
+      if (!namesArr?.every(name => name.includes(' '))) {
+        setKhForm({...khForm,
+          isValid: false,
+          names: {
+            ...khForm.names,
+            isValid: false,
+            helperTextError: 'All names MUST contain a last name.'
+          }
+        });
+        return;
+      }
+
+      if (namesArr.length > 7) {
+        setKhForm({...khForm,
+          isValid: false,
+          names: {
+            ...khForm.names,
+            isValid: false,
+            helperTextError: 'Cannot add more than 7 names'
+          }
+        });
+        return;
+      }
+
+      if (khForm.formTypeRadioGroup.radioSelected === 'recite') {
+        if (namesArr.length > khForm.openSlots) {
+          let noOfUsersToRemove = namesArr.length - khForm.openSlots;
+          setKhForm({...khForm,
+            isValid: false,
+            names: {
+              ...khForm.names,
+              isValid: false,
+              helperTextError: `
+              There ${khForm.openSlots > 1 ? 'are' : 'is'} only ${khForm.openSlots} open spot${khForm.openSlots > 1 ? 's' : ''} in current khatam. 
+              Please remove ${noOfUsersToRemove} name${noOfUsersToRemove > 1 ? 's': ''} and try again.
+            `
+            }
+          });
+          return;
+        } else {
+          setAlertMsg(null);
+        }
+      }
+
+      setKhForm({...khForm,
+        names: {...khForm.names,
+          values: namesArr,
+          isValid: true,
+          helperTextError: null
+        }
+      });
     }
+  }
+
+  function validateEmail () {
+    if (khForm.email.value == null || khForm.email.value === '') {
+      resetEmail();
+    } else {
+      const isEmailValid = !!khForm.email.value.match(
+        /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      );
+
+      if (!!!isEmailValid) {
+        setKhForm({
+          ...khForm,
+          email: {...khForm.email,
+            isValid: false,
+            helperTextError: 'Please enter a valid email address',
+          }
+        })
+      } else {
+        setKhForm({
+          ...khForm,
+          email: {...khForm.email,
+            isValid: true,
+            helperTextError: null,
+          }
+        })
+      }
+    }
+  }
+
+  function handleFormTypeChange (e) {
+    let selectedValue = khForm.isKhatamFull ? 
+      khForm.formTypeRadioGroup.completed.value : e.target.value;
+
+    setKhForm({
+      ...khForm,
+      formTypeRadioGroup: { 
+        ...khForm.formTypeRadioGroup, 
+        radioSelected: selectedValue
+      }
+    })
   }
 
   async function handleKhatamFormSubmit (e) {
     e.preventDefault();
     const formData = {
-      names: names,
-      email: email
+      names: getNamesArray(),
+      email: khForm.email.value,
+    };
+
+    // if (!khForm.isValid) {
+    //   return;
+    // }
+
+    if (
+      khForm.names.isValid && 
+      khForm.email.isValid && 
+      khForm.formTypeRadioGroup.radioSelected != null
+    ) {
+      setKhForm({...khForm,
+        isValid: true,
+      })
     }
 
-    // If no option is selected
-    if (+formType !== 1 && +formType !== 2) {
-      showError('Please select the appropriate option');
-    }
-  
-    // If current khatam is full
-    if (+formType === 1 && isKhatamFull) {
-      showError('Current Khatam is full!');
-      return;
-    }
+    if (khForm.formTypeRadioGroup.radioSelected == 'recite') {
+      if (khForm.isKhatamFull) {
+        setModalTitle('Current khatam is full!');
+        setModalHTML(
+          <Typography>Unable to add users to current kharam as it is full!</Typography>
+        );
+        setShowModal(true);
+        return;
+      }
 
-    // If not enough spots available
-    if (isNamesError && alertMsg !== null) {
-      showError(alertMsg);
-      return;
-    }
-
-    // If names are invalid
-    if (isNamesError) {
-      showError('Please fix the errors below and try again.');
-      return;
-    }
-
-    // If email is invalid?
-
-    // Reset Alert and form
-    setDoAlertReset(true);
-    setIsFormValid(true);
-
-    if (+formType === 1) {
-      await handleSignup(formData)
-    } else if (+formType === 2) {
-      handleJuzCompleted(formData);
+      setIsFormProcessing(true);
+      await handleSignup(formData);
+    } else if (khForm.formTypeRadioGroup.radioSelected == 'completed') {
+      setIsFormProcessing(true);
+      await handleJuzCompleted(formData);
+    } else {
+      setKhForm({...khForm, 
+        formTypeRadioGroup: {...khForm.formTypeRadioGroup,
+          isValid: false,
+          helperText: "Please select an appropriate option",
+        }
+      })
     }
   }
 
-  async function handleSignup(formData) {
-    if (isFormValid) {
+  async function handleSignup (formData) {
+    if (khForm.isValid) {
       await (
         await fetch(
           kh_auth_rest.signup,
@@ -238,9 +339,23 @@ export default function ReciteForm ({
         )
       ).json().then(data => {
         if (data.status == 1) {
-          setAlertMsg(data.msg);
+          setModal({...modal,
+            showModal: true,
+            severity: 'warning',
+            modalTitle: 'Error',
+            modalText: data.msg,
+            children: null,
+          });
+          setIsFormProcessing(false);
         } else {
-          setOpenSlots(data.openSlots);
+          let isKhatamFull = data.openSlots <= 0;
+
+          setIsFormProcessing(false);
+
+          setKhForm({...khFormDefaultState,
+            openSlots: data.openSlots,
+            isKhatamFull: isKhatamFull,
+          });
 
           const userTableUpdated = new Event ('khatamUpdated');
           const khDataBlocks = document.querySelectorAll('.kh-users');
@@ -249,19 +364,28 @@ export default function ReciteForm ({
             block.dispatchEvent(userTableUpdated)
           );
 
-          setAddedUsers(data.results);
-          setModalHTML(
-            <SuccessTable users={addedUsers}/>
-          );
-          setShowModal(true);
+          setModal({...modal,
+            showModal: true,
+            severity: 'success',
+            modalTitle: 'Success',
+            modalText: "The following users were successfully added to current khatam:",
+            children: [<SuccessTable users={data.results}/>],
+          });
         }
       });
     } else {
-      showError('Please fix the errors and try again!');
+      setModal({...modal,
+        showModal: true,
+        severity: 'warning',
+        modalTitle: 'Error',
+        modalText: "Please fix the errors and try again!",
+        children: [],
+      });
+      setIsFormProcessing(false);
     }
   }
 
-  async function handleJuzCompleted(formData) {
+  async function handleJuzCompleted (formData) {
     await (
       await fetch(
         kh_auth_rest.completejuz,
@@ -275,19 +399,29 @@ export default function ReciteForm ({
       )
     ).json().then(data => {
       if (data.status == 1) {
-        setAlertMsg(data.msg);
+        setModal({...modal,
+          showModal: true,
+          severity: 'warning',
+          modalTitle: 'Error',
+          modalText: data.msg,
+          children: null,
+        })
       } else {
-        // console.log(data);
-        // setAddedUsers(data.results);
-        setShowModal(true);
-
-        const userTableUpdated = new Event ('khatamUpdated');
-        const khDataBlocks = document.querySelectorAll('.kh-users');
-        
-        khDataBlocks.forEach(block => 
-          block.dispatchEvent(userTableUpdated)
-        );
+        setModal({...modal,
+          showModal: true,
+          severity: 'success',
+          modalTitle: 'Success',
+          modalText: "The user(s) were successfully updated",
+          children: null,
+        });
       }
+      
+      const userTableUpdated = new Event ('khatamUpdated');
+      const khDataBlocks = document.querySelectorAll('.kh-users');
+      khDataBlocks.forEach(block => 
+        block.dispatchEvent(userTableUpdated)
+      );
+      setIsFormProcessing(false);
     });
   }
 
@@ -299,88 +433,116 @@ export default function ReciteForm ({
         color="secondary"
       />
       <Divider variant="middle" />
-      <form onSubmit={handleKhatamFormSubmit}>
-        <CardContent sx={{ paddingLeft: "2rem"}}>
-          <Stack spacing={2}>
-            <FormControl>
-              <FormLabel id="kh-form-type" required>
-                <Typography variant="body2" component="span">
-                  Please Select One
-                </Typography>
-              </FormLabel>
-              <RadioGroup
-                aria-labelledby='kh-form-type'
-                name="khFormType"
-                onChange={e => setFormType(e.target.value)}
-              >
-                <FormControlLabel
-                  value={1}
-                  control={<Radio size="small" />}
-                  label={isKhatamFull ?
-                    <span>Current khatam is full</span> :
-                    "I want to recite"
+      <div style={{
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center'
+      }}>
+      {
+        isFormProcessing ? 
+        <CircularProgress sx={{
+          padding: '24px',
+        }} /> :
+        
+        <form 
+          style={{
+            width: '100%',
+          }}
+          onSubmit={handleKhatamFormSubmit}>
+          <CardContent sx={{ paddingLeft: "2rem"}}>
+            <Stack spacing={2}>
+              <FormControl>
+                <FormLabel id="kh-form-type" error={ !khForm.formTypeRadioGroup.isValid } required>
+                  <Typography variant="body2" component="span">
+                    Please Select One
+                  </Typography>
+                </FormLabel>
+                <RadioGroup
+                  aria-labelledby='kh-form-type'
+                  name="khFormType"
+                  value={ khForm.radioSelected }
+                  onChange={ e => {
+                    setKhForm({...khForm,
+                      formTypeRadioGroup: {...khForm.formTypeRadioGroup,
+                        isValid: true,
+                        helperText: '',
+                        radioSelected: e.target.value,
+                        prevRadioSelected: khForm.formTypeRadioGroup.radioSelected,
+                      }
+                    });
+                  }}
+                >
+                  <FormControlLabel
+                    value={khForm.formTypeRadioGroup.recite.value}
+                    control={<Radio size="small" />}
+                    label={ khForm.formTypeRadioGroup.recite.label }
+                    disabled={ khForm.isKhatamFull }
+                  />
+                  <FormControlLabel
+                    value={khForm.formTypeRadioGroup.completed.value}
+                    control={<Radio size="small" />}
+                    label={ khForm.formTypeRadioGroup.completed.label }
+                  />
+                </RadioGroup>
+                <FormHelperText error={ !khForm.formTypeRadioGroup.isValid }>
+                  { khForm.formTypeRadioGroup.helperText }
+                </FormHelperText>
+              </FormControl>
+              <FormControl>
+                <TextField 
+                  id="khName" 
+                  value={ khForm.names.value }
+                  label={ khForm.names.label }
+                  helperText={ khForm.names.isValid ? 
+                    khForm.names.helperTextDefault :
+                    khForm.names.helperTextError
                   }
-                  disabled={ isKhatamFull }
-                  checked={ signupBtnChecked }
-                  onChange={e => setSignupBtnChecked(!!e.target.value)}
+                  error={ !khForm.names.isValid }
+                  required
+                  variant="standard" 
+                  onChange={e => setKhForm({...khForm,
+                    names: { ...khForm.names, value: e.target.value }
+                  })}
+                  onBlur={ validateNames }
                 />
-                <FormControlLabel
-                  value={2}
-                  control={<Radio size="small" />}
-                  label="I completed recitation"
-                  checked={ completedBtnChecked }
-                  onChange={e => setCompletedBtnChecked(!!e.target.value)}
+              </FormControl>
+              <FormControl>
+                <TextField 
+                  id="khEmail" 
+                  label="Email" 
+                  variant="standard" 
+                  required
+                  value={ khForm.email.value }
+                  onChange={e => setKhForm({...khForm, 
+                    email: { ...khForm.email, 
+                      value: e.target.value
+                    }
+                  })}
+                  onBlur={validateEmail}
+                  helperText={ khForm.email.isValid ? 
+                    khForm.email.helperTextDefault :
+                    khForm.email.helperTextError
+                  }
+                  error={ !khForm.email.isValid }
                 />
-              </RadioGroup>
-            </FormControl>
-            <FormControl>
-              <TextField 
-                id="khName" 
-                label="Name(s)" 
-                variant="standard" 
-                helperText={ 
-                  isNamesError ? 
-                  namesError : 
-                  'Names must be comma separated'
-                }
-                error={ isNamesError }
-                required
-                // onChange={e => setNamesField(e.target.value)}
-                onBlur={e => validateNames(e)}
-              />
-            </FormControl>
-            <FormControl>
-              <TextField 
-                id="khEmail" 
-                label="Email" 
-                variant="standard" 
-                required
-                value={ email }
-                onChange={e => setEmail(e.target.value)}
-                onBlur={e => validateEmail(e)}
-                helperText={ 
-                  isEmailError ? 
-                  emailError : 
-                  null
-                }
-                error={ isEmailError }
-              />
-            </FormControl>
-          </Stack>
+              </FormControl>
+            </Stack>
 
-        </CardContent>
-        <CardActions sx={{justifyContent: "flex-end"}}>
-          <Button variant="standard" type='submit'>
-            <Typography 
-              variant="subtitle2" 
-              color="secondary" 
-              sx={{ fontWeight: 700 }}
-            >
-              Submit
-            </Typography>
-          </Button>
-        </CardActions>
-      </form>
+          </CardContent>
+          <CardActions sx={{justifyContent: "flex-end"}}>
+            <Button variant="standard" type='submit'>
+              <Typography 
+                variant="subtitle2" 
+                color="secondary" 
+                sx={{ fontWeight: 700 }}
+              >
+                Submit
+              </Typography>
+            </Button>
+          </CardActions>
+        </form>
+      }
+      </div>
     </Card>
   );
 }

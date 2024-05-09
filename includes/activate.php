@@ -5,7 +5,9 @@ function kh_activate_plugin () {
 }
 
 function createTables () {
+  ob_start();
   require_once(ABSPATH . "/wp-admin/includes/upgrade.php");
+  // require_once(__DIR__ . "/../../../../wp-admin/includes/upgrade.php");
   global $wpdb;
   $charsetCollate = $wpdb->get_charset_collate();
 
@@ -51,4 +53,23 @@ function createTables () {
     ) ENGINE='InnoDB' {$charsetCollate};
   SQL;
   dbDelta($schema);
+
+  // Create a khatam if the table is empty then create a Khatam
+  $row_count = $wpdb->get_var("SELECT COUNT(*) FROM {$khatams}");
+
+  if ($row_count > 0) {
+    return;
+  }
+
+  $wpdb->insert("{$wpdb->prefix}khatams", array(
+    "id" => 24,
+    "name" => 'xyz_khatam',
+    "start_date" => '2023-12-10',
+    "end_date" => '2023-12-30',
+    "meeting_link" => 'asda.com',
+    "meeting_ts" => 'asda.com',
+    "created_on" => '2023-12-10',
+    "updated_on" => '2023-12-10',
+
+  ));
 }

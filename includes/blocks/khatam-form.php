@@ -21,8 +21,8 @@ function kh_khatam_form_render_cb ($atts) {
 }
 
 function updateKhatamInfo () {
-	require_once(ABSPATH . "/wp-content/plugins/khatam/repositories/khatamUsersRepository.php");
-  require_once(ABSPATH . "/wp-content/plugins/khatam/repositories/khatamRepository.php");
+  require_once(__DIR__ . "/../../repositories/khatamUsersRepository.php");
+  require_once(__DIR__ . "/../../repositories/khatamRepository.php");
 
 	$currentKhatam = getCurrentKhatam();
 
