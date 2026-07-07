@@ -46,7 +46,11 @@ add_action('admin_enqueue_scripts', 'kh_admin_enqueue_scripts');
 add_action('admin_post_kh_save_options', 'kh_save_options');
 add_action('admin_post_kh_end_khatam', 'kh_end_khatam');
 add_action('admin_post_kh_send_reminders_now', 'kh_send_reminders_now');
+add_action('admin_post_kh_dismiss_tutorial', 'kh_dismiss_tutorial');
 add_action('init', 'kh_register_assets');
+
+// Tutorial overlay on dashboard
+add_action('admin_footer', 'kh_maybe_render_tutorial');
 
 // Email reminder cron
 add_action(KH_REMINDER_CRON_HOOK, 'kh_reminder_cron_handler');

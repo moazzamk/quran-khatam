@@ -2,6 +2,9 @@
 
 function kh_activate_plugin () {
   createTables();
+
+  // Show tutorial on first admin visit after activation
+  update_option('kh_show_tutorial', '1');
 }
 
 function createTables () {

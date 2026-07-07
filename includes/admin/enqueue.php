@@ -27,4 +27,21 @@ function kh_admin_enqueue_scripts ($hook_suffix) {
     wp_enqueue_style('kh_admin');
     wp_enqueue_script('kh_admin');
   }
+
+  // Tutorial overlay (only on dashboard, only when flag is set)
+  if ($hook_suffix === 'toplevel_page_quran-khatam-dashboard' && get_option('kh_show_tutorial') === '1') {
+    wp_enqueue_style(
+      'kh-tutorial-css',
+      plugins_url('/assets/admin-tutorial.css', KH_PLUGIN_FILE),
+      [],
+      filemtime(KH_PLUGIN_DIR . 'assets/admin-tutorial.css')
+    );
+    wp_enqueue_script(
+      'kh-tutorial-js',
+      plugins_url('/assets/admin-tutorial.js', KH_PLUGIN_FILE),
+      [],
+      filemtime(KH_PLUGIN_DIR . 'assets/admin-tutorial.js'),
+      true
+    );
+  }
 }

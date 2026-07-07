@@ -1,0 +1,247 @@
+/* ==========================================================================
+   Quran Khatam — Admin Tutorial Overlay
+   ========================================================================== */
+
+.kh-tutorial-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 999999;
+  pointer-events: none;
+}
+
+.kh-tutorial-overlay * {
+  pointer-events: auto;
+}
+
+/* Semi-transparent backdrop */
+.kh-tutorial-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1;
+  transition: opacity 0.3s ease;
+}
+
+/* Spotlight cutout around the target element */
+.kh-tutorial-spotlight {
+  position: absolute;
+  z-index: 2;
+  border-radius: 6px;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6);
+  transition: top 0.3s ease, left 0.3s ease, width 0.3s ease, height 0.3s ease;
+  pointer-events: none;
+}
+
+/* Tooltip card */
+.kh-tutorial-tooltip {
+  position: absolute;
+  z-index: 3;
+  width: 380px;
+  max-width: calc(100vw - 40px);
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: top 0.3s ease, left 0.3s ease, opacity 0.3s ease;
+  animation: kh-tutorial-fadein 0.3s ease;
+}
+
+.kh-tutorial-tooltip-center {
+  position: fixed;
+  width: 440px;
+}
+
+@keyframes kh-tutorial-fadein {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.kh-tutorial-tooltip-center {
+  animation-name: kh-tutorial-fadein-center;
+}
+
+@keyframes kh-tutorial-fadein-center {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* Step indicator */
+.kh-tutorial-step-indicator {
+  font-size: 11px;
+  font-weight: 600;
+  color: #2d6a4f;
+  background: #d8f3dc;
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  letter-spacing: 0.3px;
+}
+
+/* Title */
+.kh-tutorial-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1d2327;
+  margin: 0 0 8px 0;
+  line-height: 1.3;
+}
+
+/* Content */
+.kh-tutorial-content {
+  font-size: 13px;
+  color: #50575e;
+  line-height: 1.6;
+  margin: 0 0 20px 0;
+}
+
+/* Actions row */
+.kh-tutorial-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.kh-tutorial-nav {
+  display: flex;
+  gap: 8px;
+}
+
+/* Buttons */
+.kh-tutorial-btn-next {
+  background: #2d6a4f;
+  color: #fff;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.kh-tutorial-btn-next:hover {
+  background: #40916c;
+}
+
+.kh-tutorial-btn-prev {
+  background: #f0f0f1;
+  color: #50575e;
+  border: 1px solid #dcdcde;
+  padding: 7px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.kh-tutorial-btn-prev:hover:not(:disabled) {
+  background: #e0e0e0;
+  color: #1d2327;
+}
+
+.kh-tutorial-btn-prev:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.kh-tutorial-btn-skip {
+  background: none;
+  border: none;
+  color: #787c82;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 4px 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.kh-tutorial-btn-skip:hover {
+  color: #1d2327;
+}
+
+/* Arrow indicator (pointing at target) */
+.kh-tutorial-tooltip-arrow {
+  display: none;
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  transform: rotate(45deg);
+  box-shadow: -2px -2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.kh-tutorial-tooltip-bottom .kh-tutorial-tooltip-arrow {
+  display: block;
+  top: -6px;
+  left: 50%;
+  margin-left: -6px;
+}
+
+.kh-tutorial-tooltip-top .kh-tutorial-tooltip-arrow {
+  display: block;
+  bottom: -6px;
+  left: 50%;
+  margin-left: -6px;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.kh-tutorial-tooltip-left .kh-tutorial-tooltip-arrow {
+  display: block;
+  right: -6px;
+  top: 50%;
+  margin-top: -6px;
+  box-shadow: 2px -2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.kh-tutorial-tooltip-right .kh-tutorial-tooltip-arrow {
+  display: block;
+  left: -6px;
+  top: 50%;
+  margin-top: -6px;
+  box-shadow: -2px 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.kh-tutorial-tooltip-center .kh-tutorial-tooltip-arrow {
+  display: none;
+}
+
+/* Fade-out animation on dismiss */
+.kh-tutorial-overlay.kh-tutorial-hiding {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .kh-tutorial-tooltip,
+  .kh-tutorial-tooltip-center {
+    width: calc(100vw - 32px);
+    left: 16px !important;
+    transform: none !important;
+  }
+
+  .kh-tutorial-tooltip-center {
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+  }
+}
