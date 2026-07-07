@@ -1,4 +1,4 @@
-import { render, useState, useEffect, useRef } from '@wordpress/element';
+import { createRoot, useState, useEffect, useRef } from '@wordpress/element';
 import { ThemeProvider, createTheme } from '@mui/material/styles'; 
 import { Alert } from '@mui/material';
 import { green, red, orange } from '@mui/material/colors';
@@ -20,8 +20,6 @@ const theme = createTheme({
     },
   },
 });
-
-import icons from '../../icons';
 
 function KhatamForm ({ availableSpots }) {
   // ALERT VARS
@@ -103,8 +101,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const block = document.querySelector('#kh-form-container');
   const availableSpots = +block.dataset.availableSpots;
 
-  render(
-    <KhatamForm availableSpots={ availableSpots } />,
-    block
-  )
+  const root = createRoot(block);
+  root.render(<KhatamForm availableSpots={ availableSpots } />);
 });

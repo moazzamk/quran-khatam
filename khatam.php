@@ -27,7 +27,8 @@ define('KH_PLUGIN_FILE',__FILE__);
 // Includes
 $rootFiles = glob(KH_PLUGIN_DIR . 'includes/*.php');
 $subdirFiles = glob(KH_PLUGIN_DIR . 'includes/**/*.php');
-$allFiles = array_merge($rootFiles, $subdirFiles);
+$deepFiles = glob(KH_PLUGIN_DIR . 'includes/**/**/*.php');
+$allFiles = array_merge($rootFiles, $subdirFiles, $deepFiles);
 
 forEach($allFiles as $file) {
   include_once($file);
@@ -35,14 +36,33 @@ forEach($allFiles as $file) {
 
 // Hooks
 register_activation_hook(__FILE__, 'kh_activate_plugin');
+register_deactivation_hook(__FILE__, 'kh_deactivate_plugin');
 add_action('init', 'kh_register_blocks');
 add_action('rest_api_init', 'kh_rest_api_init');
 add_action('wp_enqueue_scripts', 'kh_enqueue_scripts', 5);
-// add_action('wp_head', 'kh_head', 5);
+add_action('wp_head', 'kh_inject_rest_urls', 1);
 add_action('admin_menu', 'kh_admin_menus');
 add_action('admin_enqueue_scripts', 'kh_admin_enqueue_scripts');
 add_action('admin_post_kh_save_options', 'kh_save_options');
+add_action('admin_post_kh_end_khatam', 'kh_end_khatam');
+add_action('admin_post_kh_send_reminders_now', 'kh_send_reminders_now');
 add_action('init', 'kh_register_assets');
+
+// Email reminder cron
+add_action(KH_REMINDER_CRON_HOOK, 'kh_reminder_cron_handler');
+add_action('init', 'kh_reminder_schedule_cron');
+
+/**
+ * Plugin deactivation: clean up cron events.
+ */
+function kh_deactivate_plugin() {
+  kh_reminder_unschedule_cron();
+}
+
+function khatam_list() {
+    print 'hiii';
+}
+
 
 // Shortcode
 add_shortcode( 'kh-form', 'kh_form_shortcode' );

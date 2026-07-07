@@ -1,8 +1,21 @@
 {
   "name": "khatam",
+  "type": "module",
   "version": "1.0.0",
-  "description": "",
+  "description": "A plugin for Quran Khatm recitations.",
   "main": "index.js",
+  "files": [
+    "khatam.php",
+    "readme.txt",
+    "README.md",
+    "includes/",
+    "repositories/",
+    "build/",
+    "assets/",
+    "kh-logo-16.svg",
+    "kh-logo-32.svg",
+    "kh-logo.svg"
+  ],
   "scripts": {
     "build": "wp-scripts build",
     "check-engines": "wp-scripts check-engines",

@@ -1,0 +1,521 @@
+/* ==========================================================================
+   Quran Khatam — Admin Design System
+   ========================================================================== */
+
+:root {
+  --kh-green-600: #2d6a4f;
+  --kh-green-500: #40916c;
+  --kh-green-400: #52b788;
+  --kh-green-100: #d8f3dc;
+  --kh-green-50: #edf7f0;
+
+  --kh-blue-500: #2563eb;
+  --kh-blue-100: #dbeafe;
+
+  --kh-amber-600: #d97706;
+  --kh-amber-100: #fef3c7;
+
+  --kh-red-600: #dc2626;
+  --kh-red-100: #fee2e2;
+
+  --kh-gray-900: #1d2327;
+  --kh-gray-700: #50575e;
+  --kh-gray-500: #787c82;
+  --kh-gray-300: #c3c4c7;
+  --kh-gray-200: #dcdcde;
+  --kh-gray-100: #f0f0f1;
+  --kh-gray-50: #f6f7f7;
+
+  --kh-white: #ffffff;
+  --kh-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --kh-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --kh-radius: 6px;
+  --kh-radius-lg: 8px;
+}
+
+/* ==========================================================================
+   Layout
+   ========================================================================== */
+
+.kh-wrap {
+  max-width: 1100px;
+  margin-top: 20px;
+}
+
+.kh-wrap h1 {
+  font-size: 23px;
+  font-weight: 600;
+  color: var(--kh-gray-900);
+  margin-bottom: 4px;
+}
+
+.kh-subtitle {
+  color: var(--kh-gray-500);
+  font-size: 13px;
+  margin: 0 0 20px 0;
+}
+
+/* ==========================================================================
+   Breadcrumbs
+   ========================================================================== */
+
+.kh-breadcrumb {
+  font-size: 13px;
+  color: var(--kh-gray-500);
+  margin-bottom: 12px;
+}
+
+.kh-breadcrumb a {
+  color: var(--kh-green-600);
+  text-decoration: none;
+}
+
+.kh-breadcrumb a:hover {
+  color: var(--kh-green-500);
+  text-decoration: underline;
+}
+
+.kh-breadcrumb .kh-sep {
+  margin: 0 6px;
+  color: var(--kh-gray-300);
+}
+
+/* ==========================================================================
+   Summary Cards
+   ========================================================================== */
+
+.kh-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.kh-card {
+  background: var(--kh-white);
+  border: 1px solid var(--kh-gray-200);
+  border-radius: var(--kh-radius-lg);
+  padding: 20px;
+  box-shadow: var(--kh-shadow-sm);
+}
+
+.kh-card-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--kh-gray-900);
+  line-height: 1.2;
+}
+
+.kh-card-value.green { color: var(--kh-green-600); }
+.kh-card-value.blue { color: var(--kh-blue-500); }
+.kh-card-value.amber { color: var(--kh-amber-600); }
+
+.kh-card-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--kh-gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+
+/* ==========================================================================
+   Tables
+   ========================================================================== */
+
+.kh-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--kh-white);
+  border: 1px solid var(--kh-gray-200);
+  border-radius: var(--kh-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--kh-shadow-sm);
+}
+
+.kh-table thead th {
+  background: var(--kh-gray-50);
+  color: var(--kh-gray-700);
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  border-bottom: 1px solid var(--kh-gray-200);
+}
+
+.kh-table tbody td {
+  padding: 12px 16px;
+  font-size: 13px;
+  color: var(--kh-gray-900);
+  border-bottom: 1px solid var(--kh-gray-100);
+  vertical-align: middle;
+}
+
+.kh-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.kh-table tbody tr:hover td {
+  background: var(--kh-gray-50);
+}
+
+.kh-table .kh-name-cell {
+  font-weight: 600;
+}
+
+.kh-table .kh-name-cell a {
+  color: var(--kh-gray-900);
+  text-decoration: none;
+}
+
+.kh-table .kh-name-cell a:hover {
+  color: var(--kh-green-600);
+}
+
+.kh-table .kh-muted {
+  color: var(--kh-gray-500);
+}
+
+/* ==========================================================================
+   Badges
+   ========================================================================== */
+
+.kh-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.kh-badge-active {
+  background: var(--kh-green-100);
+  color: var(--kh-green-600);
+}
+
+.kh-badge-upcoming {
+  background: var(--kh-blue-100);
+  color: var(--kh-blue-500);
+}
+
+.kh-badge-past {
+  background: var(--kh-gray-100);
+  color: var(--kh-gray-500);
+}
+
+.kh-badge-complete {
+  background: var(--kh-green-100);
+  color: var(--kh-green-600);
+}
+
+.kh-badge-pending {
+  background: var(--kh-amber-100);
+  color: var(--kh-amber-600);
+}
+
+/* ==========================================================================
+   Row Actions
+   ========================================================================== */
+
+.kh-actions {
+  white-space: nowrap;
+}
+
+.kh-actions a {
+  color: var(--kh-green-600);
+  text-decoration: none;
+  font-size: 13px;
+  margin-right: 12px;
+}
+
+.kh-actions a:hover {
+  color: var(--kh-green-500);
+  text-decoration: underline;
+}
+
+.kh-actions .kh-danger {
+  color: var(--kh-red-600);
+}
+
+.kh-actions .kh-danger:hover {
+  color: #991b1b;
+}
+
+/* ==========================================================================
+   Progress Bar
+   ========================================================================== */
+
+.kh-progress-wrap {
+  margin-bottom: 24px;
+}
+
+.kh-progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--kh-gray-700);
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.kh-progress-bar {
+  width: 100%;
+  height: 10px;
+  background: var(--kh-gray-200);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.kh-progress-fill {
+  height: 100%;
+  background: var(--kh-green-500);
+  border-radius: 5px;
+  transition: width 0.3s ease;
+}
+
+/* ==========================================================================
+   Forms (extends WordPress form-table)
+   ========================================================================== */
+
+.kh-form-section {
+  background: var(--kh-white);
+  border: 1px solid var(--kh-gray-200);
+  border-radius: var(--kh-radius-lg);
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: var(--kh-shadow-sm);
+}
+
+.kh-form-section h2 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--kh-gray-900);
+  margin: 0 0 16px 0;
+  padding: 0;
+}
+
+.kh-form-section .form-table {
+  margin-top: 0;
+}
+
+.kh-form-section .form-table th {
+  padding-top: 16px;
+  padding-bottom: 16px;
+  font-weight: 500;
+}
+
+.kh-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.kh-form-field {
+  margin-bottom: 16px;
+}
+
+.kh-form-field label {
+  display: block;
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--kh-gray-700);
+  margin-bottom: 6px;
+}
+
+.kh-form-field input,
+.kh-form-field textarea {
+  width: 100%;
+  max-width: 100%;
+}
+
+.kh-form-field input[type="button"],
+.kh-form-field input[type="submit"] {
+  width: auto;
+}
+
+.kh-form-field .quicktags-toolbar input {
+  width: auto;
+}
+
+.kh-form-field input[type="checkbox"] {
+  width: auto;
+}
+
+.kh-form-field .description {
+  margin-top: 4px;
+}
+
+/* Inline add form (participants) */
+.kh-inline-form {
+  background: var(--kh-white);
+  border: 1px solid var(--kh-gray-200);
+  border-radius: var(--kh-radius-lg);
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  box-shadow: var(--kh-shadow-sm);
+}
+
+.kh-inline-form h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--kh-gray-900);
+  margin: 0 0 16px 0;
+}
+
+.kh-inline-form .kh-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 80px auto;
+  gap: 12px;
+  align-items: end;
+}
+
+.kh-inline-form .kh-form-grid label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--kh-gray-500);
+  margin-bottom: 4px;
+}
+
+.kh-inline-form .kh-form-grid input {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid var(--kh-gray-300);
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
+
+.kh-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--kh-green-600);
+  color: var(--kh-white);
+  border: none;
+  padding: 8px 16px;
+  border-radius: var(--kh-radius);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+
+.kh-btn-primary:hover {
+  background: var(--kh-green-500);
+  color: var(--kh-white);
+}
+
+.kh-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--kh-white);
+  color: var(--kh-gray-700);
+  border: 1px solid var(--kh-gray-300);
+  padding: 7px 14px;
+  border-radius: var(--kh-radius);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+
+.kh-btn-secondary:hover {
+  background: var(--kh-gray-50);
+  color: var(--kh-gray-900);
+  border-color: var(--kh-gray-500);
+}
+
+/* ==========================================================================
+   Juz Input (no spinners)
+   ========================================================================== */
+
+.kh-juz-input::-webkit-outer-spin-button,
+.kh-juz-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.kh-juz-input {
+  -moz-appearance: textfield;
+  width: 44px !important;
+  text-align: center;
+  padding: 4px 6px;
+  border: 1px solid var(--kh-gray-300);
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+/* ==========================================================================
+   Row color-coding (participants)
+   ========================================================================== */
+
+.kh-table tbody tr.kh-row-complete {
+  border-left: 3px solid var(--kh-green-400);
+}
+
+.kh-table tbody tr.kh-row-pending {
+  border-left: 3px solid var(--kh-amber-600);
+}
+
+/* ==========================================================================
+   Empty State
+   ========================================================================== */
+
+.kh-empty {
+  text-align: center;
+  padding: 48px 24px;
+  background: var(--kh-white);
+  border: 1px dashed var(--kh-gray-300);
+  border-radius: var(--kh-radius-lg);
+}
+
+.kh-empty-icon {
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+
+.kh-empty h3 {
+  font-size: 16px;
+  color: var(--kh-gray-900);
+  margin: 0 0 8px 0;
+}
+
+.kh-empty p {
+  color: var(--kh-gray-500);
+  font-size: 13px;
+  margin: 0 0 16px 0;
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 782px) {
+  .kh-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .kh-form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .kh-inline-form .kh-form-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .kh-table {
+    display: block;
+    overflow-x: auto;
+  }
+}

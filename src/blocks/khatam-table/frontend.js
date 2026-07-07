@@ -1,4 +1,4 @@
-import { render, useState, useEffect } from '@wordpress/element';
+import { createRoot, useState, useEffect, useRef } from '@wordpress/element';
 import {
   Paper, Chip
 } from '@mui/material';
@@ -7,10 +7,9 @@ import { orange, green, grey } from '@mui/material/colors';
 
 import { ThemeProvider, createTheme } from '@mui/material/styles'; 
 import CircularProgress from '@mui/material/CircularProgress';
-import UnfoldMoreIcon from "@mui/icons-material/UnfoldMore";
 
 import styles from './main.css';
-import icons from '../../icons';
+
 const theme = createTheme({
   typography: {
     allVariants: {
@@ -20,12 +19,19 @@ const theme = createTheme({
 });
 
 function UnsortedIcon () {
-  return <UnfoldMoreIcon className="icon" />
+  return (
+    <svg className="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+      <path d="M12 5.83 15.17 9l1.41-1.41L12 3 7.41 7.59 8.83 9 12 5.83zm0 12.34L8.83 15l-1.41 1.41L12 21l4.59-4.59L15.17 15 12 18.17z"/>
+    </svg>
+  );
 }
 
 function KhatamTable () {
   const [khatamUsers, setKhatamUsers] = useState([]);
   const [isDataAvailable, setIsDataAvailable] = useState(false);
+  const [highlightedJuzs, setHighlightedJuzs] = useState([]);
+  const prevUsersRef = useRef([]);
+  const isFirstLoad = useRef(true);
 
   async function getKhatamUsers () {
     setIsDataAvailable(false);
@@ -43,6 +49,30 @@ function KhatamTable () {
         for (let i = (30 - (30 - data.data.length) + 1); i <= 30; i++) {
           shapedArr.push({email: null, status: null, juz: i, firstName: null, lastName: null})
         }
+
+        // Detect changes for flash highlight
+        if (!isFirstLoad.current) {
+          const prev = prevUsersRef.current;
+          const changedJuzs = [];
+
+          shapedArr.forEach(user => {
+            if (!user.email) return;
+            const prevUser = prev.find(p => p.juz === user.juz);
+            // New user in this slot or status changed
+            if (!prevUser || !prevUser.email || prevUser.email !== user.email || prevUser.status !== user.status) {
+              changedJuzs.push(+user.juz);
+            }
+          });
+
+          if (changedJuzs.length > 0) {
+            setHighlightedJuzs(changedJuzs);
+            // Clear highlight after animation
+            setTimeout(() => setHighlightedJuzs([]), 3000);
+          }
+        }
+
+        isFirstLoad.current = false;
+        prevUsersRef.current = shapedArr;
         setKhatamUsers(shapedArr);
       }
       setIsDataAvailable(true);
@@ -61,21 +91,20 @@ function KhatamTable () {
     []
   );
 
-  useEffect(() => {}, [isDataAvailable]);
-
   const columns = [
     {
       field: 'juz', 
       headerName: 'Juz',
-      type: 'bumber', 
-      flex: .3, 
+      type: 'number', 
+      flex: .3,
+      headerAlign: 'left',
+      align: 'left',
     },
     { 
       field: 'fullName', 
       headerName: 'Reciter', 
       description: 'This column has a value getter and is not sortable.', 
       flex: .4, 
-      // width: 100,
       valueGetter: (params) => `${params.row.firstName || ''} ${params.row.lastName || ''}` 
     },
     { 
@@ -169,6 +198,14 @@ function KhatamTable () {
             [`& .${gridClasses.row}.even`]: {
               background: grey[100],
             },
+            [`& .${gridClasses.row}.kh-flash`]: {
+              animation: 'kh-row-flash 3s ease-out',
+            },
+            '@keyframes kh-row-flash': {
+              '0%': { background: '#bbf7d0' },
+              '30%': { background: '#bbf7d0' },
+              '100%': { background: 'inherit' },
+            },
             '& .MuiDataGrid-columnHeaders': {
               background: grey['300'],
               borderRadius: 0,
@@ -183,9 +220,14 @@ function KhatamTable () {
               opacity: 'inherit !important',
             },
           }}
-          getRowClassName={(params) =>
-            params.indexRelativeToCurrentPage % 2 === 0 ? 'even' : 'odd'
-          }
+          getRowClassName={(params) => {
+            const classes = [];
+            classes.push(params.indexRelativeToCurrentPage % 2 === 0 ? 'even' : 'odd');
+            if (highlightedJuzs.includes(+params.row.juz)) {
+              classes.push('kh-flash');
+            }
+            return classes.join(' ');
+          }}
           disableColumnMenu
         />
       }
@@ -196,9 +238,8 @@ function KhatamTable () {
 
 document.addEventListener('DOMContentLoaded', () => {
   let block = document.querySelector('#kh-table-container');
+  if (!block) return;
 
-  render(
-    <KhatamTable />,
-    block
-  )
+  const root = createRoot(block);
+  root.render(<KhatamTable />);
 });

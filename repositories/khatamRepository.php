@@ -1,5 +1,17 @@
 <?php
 
+function getKhatams() {
+  global $wpdb;
+
+  $sql = <<<SQL
+    SELECT 
+        *
+    FROM {$wpdb->prefix}khatams
+    ORDER BY start_date
+  SQL;
+  return $wpdb->get_results($sql);
+}
+
 function khatamInsert(array $khatam) : int|false {
   global $wpdb;
 
@@ -34,6 +46,7 @@ function getKhatamById(int $id) {
   $sql = <<<SQL
     SELECT
         id,
+        name,
         start_date AS startDate,
         end_date AS endDate,
         meeting_link as meetingLink,

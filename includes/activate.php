@@ -54,6 +54,22 @@ function createTables () {
   SQL;
   dbDelta($schema);
 
+  // Email reminder log table
+  $emailLog = "{$wpdb->prefix}khatam_email_log";
+  $schema = <<<SQL
+    CREATE TABLE IF NOT EXISTS {$emailLog} (
+      id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+      khatam_id BIGINT(20) NOT NULL,
+      email VARCHAR(255) NOT NULL,
+      sent_date DATE NOT NULL,
+      success TINYINT NOT NULL DEFAULT 0,
+      created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+      PRIMARY KEY (id),
+      KEY idx_khatam_email_date (khatam_id, email, sent_date)
+    ) ENGINE='InnoDB' {$charsetCollate};
+  SQL;
+  dbDelta($schema);
+
   // Create a khatam if the table is empty then create a Khatam
   $row_count = $wpdb->get_var("SELECT COUNT(*) FROM {$khatams}");
 

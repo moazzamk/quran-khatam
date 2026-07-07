@@ -364,13 +364,13 @@ export default function ReciteForm ({
             block.dispatchEvent(userTableUpdated)
           );
 
-          setModal({...modal,
-            showModal: true,
-            severity: 'success',
-            modalTitle: 'Success',
-            modalText: "The following users were successfully added to current khatam:",
-            children: [<SuccessTable users={data.results}/>],
-          });
+          // Scroll to table so user sees flashing rows
+          const tableContainer = document.querySelector('#kh-table-container');
+          if (tableContainer) {
+            setTimeout(() => {
+              tableContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+          }
         }
       });
     } else {
@@ -407,12 +407,9 @@ export default function ReciteForm ({
           children: null,
         })
       } else {
-        setModal({...modal,
-          showModal: true,
-          severity: 'success',
-          modalTitle: 'Success',
-          modalText: "The user(s) were successfully updated",
-          children: null,
+        setKhForm({...khFormDefaultState,
+          openSlots: khForm.openSlots,
+          isKhatamFull: khForm.isKhatamFull,
         });
       }
       
@@ -422,6 +419,16 @@ export default function ReciteForm ({
         block.dispatchEvent(userTableUpdated)
       );
       setIsFormProcessing(false);
+
+      // Scroll to table so user sees flashing rows
+      if (data.status != 1) {
+        const tableContainer = document.querySelector('#kh-table-container');
+        if (tableContainer) {
+          setTimeout(() => {
+            tableContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 300);
+        }
+      }
     });
   }
 
@@ -436,17 +443,20 @@ export default function ReciteForm ({
       <div style={{
         width: '100%',
         display: 'flex',
-        justifyContent: 'center'
+        flexDirection: 'column',
+        alignItems: 'center'
       }}>
       {
-        isFormProcessing ? 
+        isFormProcessing &&
         <CircularProgress sx={{
           padding: '24px',
-        }} /> :
-        
+        }} />
+      }
         <form 
           style={{
             width: '100%',
+            opacity: isFormProcessing ? 0.5 : 1,
+            pointerEvents: isFormProcessing ? 'none' : 'auto',
           }}
           onSubmit={handleKhatamFormSubmit}>
           <CardContent sx={{ paddingLeft: "2rem"}}>
@@ -530,18 +540,17 @@ export default function ReciteForm ({
 
           </CardContent>
           <CardActions sx={{justifyContent: "flex-end"}}>
-            <Button variant="standard" type='submit'>
+            <Button variant="standard" type='submit' disabled={isFormProcessing}>
               <Typography 
                 variant="subtitle2" 
                 color="secondary" 
                 sx={{ fontWeight: 700 }}
               >
-                Submit
+                {isFormProcessing ? 'Submitting...' : 'Submit'}
               </Typography>
             </Button>
           </CardActions>
         </form>
-      }
       </div>
     </Card>
   );
