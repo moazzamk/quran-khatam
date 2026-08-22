@@ -2,9 +2,6 @@
 
 function kh_activate_plugin () {
   createTables();
-
-  // Show tutorial on first admin visit after activation
-  update_option('kh_show_tutorial', '1');
 }
 
 function createTables () {
@@ -24,7 +21,7 @@ function createTables () {
       name VARCHAR(255),
       start_date DATE,
       end_date DATE,
-      meeting_link VARCHAR(255),
+      meeting_ink VARCHAR(255),
       meeting_ts TIMESTAMP,
       created_on TIMESTAMP DEFAULT now(),
       updated_on TIMESTAMP DEFAULT now(),
@@ -53,22 +50,6 @@ function createTables () {
       last_name VARCHAR(255),
       status TINYINT NOT NULL DEFAULT 0,
       juz_num TINYINT
-    ) ENGINE='InnoDB' {$charsetCollate};
-  SQL;
-  dbDelta($schema);
-
-  // Email reminder log table
-  $emailLog = "{$wpdb->prefix}khatam_email_log";
-  $schema = <<<SQL
-    CREATE TABLE IF NOT EXISTS {$emailLog} (
-      id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-      khatam_id BIGINT(20) NOT NULL,
-      email VARCHAR(255) NOT NULL,
-      sent_date DATE NOT NULL,
-      success TINYINT NOT NULL DEFAULT 0,
-      created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
-      PRIMARY KEY (id),
-      KEY idx_khatam_email_date (khatam_id, email, sent_date)
     ) ENGINE='InnoDB' {$charsetCollate};
   SQL;
   dbDelta($schema);
